@@ -43,6 +43,7 @@ public:
 	virtual void Motion(){};
 	virtual void Draw(int shaderIndx,int cameraIndx,bool debugMode);
 
+	void change_shape_mode(int index, unsigned int new_mode);
 	glm::mat4 GetViewProjection(int indx) const; 
 	glm::mat4 GetShapeTransformation() const;
 	
@@ -91,7 +92,7 @@ protected:
 	std::vector<int> chainParents;
 	int pickedShape;
 	int direction;
-	static const int scaleFactor =2;
+	static const int scaleFactor = 2;
 	bool isActive;
 	void ScaleAllDirections(int factor);
 };

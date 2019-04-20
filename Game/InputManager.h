@@ -1,7 +1,16 @@
 #pragma once   //maybe should be static class
 #include "display.h"
 #include "game.h"
+#include <iostream>
 
+#define NO_OF_MODES 8
+
+int curr_mode = 7;
+bool bezier_surface_flag = 0;
+char modes_names[8][20] = { "POINTS", "LINES" , "LINE_STRIP", "LINE_LOOP", "TRIANGLES", "TRIANGLE_STRIP", "TRIANGLE_FAN",  "QUADS" };
+
+extern int MAX_CTRL;
+extern int MIN_CTRL;
 
 	void mouse_callback(GLFWwindow* window,int button, int action, int mods)
 	{	
@@ -33,13 +42,26 @@
 					glfwSetWindowShouldClose(window,GLFW_TRUE);
 				break;
 				case GLFW_KEY_SPACE:
+					//scn->HideShape(0);
+					//scn->Deactivate();
+					if (bezier_surface_flag == 0)
+					{
+						scn->addShape(5, -1, curr_mode);
+						bezier_surface_flag++;
+						//for (int i = MIN_CTRL - 2; i < MAX_CTRL; i++) 
+						//{
+						//	scn->HideShape(i);
+						//}
+					}
+					/*
 					scn->HideShape(0);
 					if(scn->IsActive())
 						scn->Deactivate();
 					else
 						scn->Deactivate();
+						*/
 				break;
-								case GLFW_KEY_RIGHT:
+					case GLFW_KEY_RIGHT:
 					//scn->shapeTransformation(scn->zGlobalRotate,-20.1f);
 					scn->shapeTransformation(scn->zLocalRotate,5.1f);
 //						cout<< "right: "<<endl;
@@ -57,7 +79,11 @@
 					scn->shapeTransformation(scn->xGlobalRotate,-5.f);
 					//cout<< "down: "<<endl;
 					break;
-
+				case GLFW_KEY_W:
+					curr_mode = (curr_mode + 1) % NO_OF_MODES;
+					std::cout << "Current mode is: " << modes_names[curr_mode] << std::endl;
+					scn->change_shape_mode(15, curr_mode);
+					break;
 			default:
 				break;
 			}

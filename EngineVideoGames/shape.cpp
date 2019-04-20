@@ -59,6 +59,16 @@ void Shape::Draw( const Shader& shader)
 	mesh->Unbind();
 }
 
+void Shape::change_mode(unsigned int new_mode)
+{
+	this->mode = new_mode;
+}
+
+MeshConstructor* Shape::GetMesh()
+{
+	return mesh;
+}
+
 Shape::~Shape(void)
 {
 	if(!isCopy)

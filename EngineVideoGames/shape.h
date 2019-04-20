@@ -38,6 +38,10 @@ public:
 
 	inline bool Is2D(){return mesh->Is2D();}
 
+	void change_mode(unsigned int new_mode);
+
+	MeshConstructor* GetMesh();
+
 	virtual ~Shape(void);
 };
 

@@ -36,15 +36,15 @@ MeshConstructor::MeshConstructor(const std::string& fileName)
 
 MeshConstructor::MeshConstructor(Bezier1D *curve,bool isSurface,unsigned int resT,unsigned int resS)
 {
-	//if(isSurface)
-	//{
-	//	Bezier2D surface(*curve,glm::vec3(0,0,1),4);
-	//	InitMesh(surface.GetSurface(resT,resS));		
-	//}
-	//else
-	//{
-	//	InitLine( curve->GetLine(resT));
-	//}
+	if (isSurface)
+	{
+		Bezier2D surface(*curve, curve->GetAxis(), 4);
+		InitMesh(surface.GetSurface(resT, resS));
+	}
+	else
+	{
+		InitLine(curve->GetLine(resT));
+	}
 }
 
 MeshConstructor::MeshConstructor(const MeshConstructor &mesh)
@@ -84,7 +84,6 @@ void MeshConstructor::InitLine(IndexedModel &model){
 	
 	vao.Unbind();
 	is2D = false;
-	
 }
 
 void MeshConstructor::InitMesh( IndexedModel &model){
