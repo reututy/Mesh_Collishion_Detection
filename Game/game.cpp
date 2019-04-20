@@ -4,9 +4,13 @@
 #define CONTROL_POINT_SCALE 0.1
 #define PURGATORY -5000000
 
-int MAX_CTRL = 3;
 int MIN_CTRL = 3;
+int MAX_CTRL = 3;
+int MIN_CTRL_TWO = 3;
+int MAX_CTRL_TWO = 3;
 bool once = false;
+int num_of_curve = 1;
+int num_of_curve_two = 0;
 
 extern bool bezier_surface_flag;
 
@@ -28,12 +32,36 @@ Game::Game():Scene()
 
 Game::Game(glm::vec3 position, float angle, float hwRelation, float near, float far) : Scene(position, angle, hwRelation, near, far)
 {
-	curve = new Bezier1D();
+	std::vector<glm::mat4> ctrlPointsVec_one;
+	std::vector<glm::mat4> ctrlPointsVec_two;
+
+	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(0.0, 0.0, 0.0, 1.0), glm::vec4(0.0, 2.0, 0.0, 1.0),
+		glm::vec4(2.0, 2.0, 0.0, 1.0), glm::vec4(2.0, 0.0, 0.0, 1.0)));
+
+	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(2.0, 0.0, 0.0, 1.0), glm::vec4(2.0, -2.0, 0.0, 1.0),
+		glm::vec4(4.0, -2.0, 0.0, 1.0), glm::vec4(4.0, 0.0, 0.0, 1.0)));
+
+	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(4.0, 0.0, 0.0, 1.0), glm::vec4(4.0, 2.0, 0.0, 1.0),
+		glm::vec4(6.0, 2.0, 0.0, 1.0), glm::vec4(6.0, 0.0, 0.0, 1.0)));
+
+	curve = new Bezier1D(ctrlPointsVec_one);
+	
+	ctrlPointsVec_two.push_back(glm::mat4(glm::vec4(-1.0, 0.0, 0.0, 1.0), glm::vec4(-1.0, 2.0, 0.0, 1.0),
+		glm::vec4(-3.0, 2.0, 0.0, 1.0), glm::vec4(-3.0, 0.0, 0.0, 1.0)));
+
+	ctrlPointsVec_two.push_back(glm::mat4(glm::vec4(-3.0, 0.0, 0.0, 1.0), glm::vec4(-3.0, -2.0, 0.0, 1.0),
+		glm::vec4(-5.0, -2.0, 0.0, 1.0), glm::vec4(-5.0, 0.0, 0.0, 1.0)));
+
+	ctrlPointsVec_two.push_back(glm::mat4(glm::vec4(-5.0, 0.0, 0.0, 1.0), glm::vec4(-5.0, 2.0, 0.0, 1.0),
+		glm::vec4(-7.0, 2.0, 0.0, 1.0), glm::vec4(-7.0, 0.0, 0.0, 1.0)));
+
+	curve_two = new Bezier1D(ctrlPointsVec_two);
 }
 
 Game::~Game(void)
 {
-	//delete curve;
+	delete curve;
+	delete curve_two;
 }
 
 void Game::addShape(int type, int parent, unsigned int mode)
@@ -96,7 +124,50 @@ void Game::Init()
 		}
 	}
 	MAX_CTRL = counter;
+	
+	/*
+	//For not making a mess with the numbers
+	addShape(Cube, -1, TRIANGLES);
+	pickedShape = counter++;
+	shapeTransformation(zGlobalTranslate, PURGATORY);*/
+
+	addShape(BezierLine, -1, LINE_STRIP);
+	num_of_curve_two = counter++;
+	MIN_CTRL_TWO = counter;
+	int modulu = 4;
+	std::cout << "num_of_curve_two is: " << num_of_curve_two << std::endl;
+	std::cout << "MIN_CTRL_TWO is: " << MIN_CTRL_TWO << std::endl;
+	for (int k = 0; k < curve_two->GetNumSegs(); k++)
+	{
+		modulu = 4;
+		for (int i = 0; i < 4; i++)
+		{
+			addShapeCopy(2, -1, TRIANGLES);
+			pickedShape = counter++;
+			control_point = *(curve_two->GetControlPoint(k, i)).GetPos();
+			//scaling the cube
+			shapeTransformation(xScale, CONTROL_POINT_SCALE);
+			shapeTransformation(yScale, CONTROL_POINT_SCALE);
+			shapeTransformation(zScale, CONTROL_POINT_SCALE);
+			//move the cube to the control point
+			std::cout << "pickedShape is: " << pickedShape << std::endl;
+			if ((k == 0) || (k != 0 && modulu++ != 4) || (i == 3 && k == curve_two->GetNumSegs() - 1))
+			{
+				std::cout << "IN: " << std::endl;
+				shapeTransformation(xGlobalTranslate, control_point.x / CONTROL_POINT_SCALE);
+				shapeTransformation(yGlobalTranslate, control_point.y / CONTROL_POINT_SCALE);
+				shapeTransformation(zGlobalTranslate, control_point.z / CONTROL_POINT_SCALE);
+			}
+			else
+			{
+				std::cout << "OUT: " << std::endl;
+				shapeTransformation(zGlobalTranslate, PURGATORY / CONTROL_POINT_SCALE);
+			}
+		}
+	}
+	MAX_CTRL_TWO = counter;
 	pickedShape = -1;
+	
 	
 
 	/*
@@ -146,6 +217,7 @@ void Game::Update(const glm::mat4 &MVP, const glm::mat4 &Normal, Shader *s)
 	if (!once) {
 		MoveControlCubes();
 	}
+	
 	if (bezier_surface_flag && !once) {
 		for (int i = MIN_CTRL - 2; i < MAX_CTRL; i++) {
 			pickedShape = i;
@@ -172,14 +244,20 @@ void Game::WhenRotate()
 
 void Game::WhenTranslate()
 {
-	bool no_preservation = !(pickedShape <= 4 || pickedShape >= MAX_CTRL - 2);
-	if (pickedShape >= 3 && pickedShape < MAX_CTRL) //Make sure that it only happens in the case of the cubes
+	WhenTranslateForCurve(curve, MIN_CTRL, MAX_CTRL, num_of_curve);
+	WhenTranslateForCurve(curve_two, MIN_CTRL_TWO, MAX_CTRL_TWO, num_of_curve_two);
+}
+
+void Game::WhenTranslateForCurve(Bezier1D *curve, int min, int max, int num_of_shape)
+{
+	bool no_preservation = !(pickedShape <= min + 1 || pickedShape >= max - 2);
+	if (pickedShape >= min && pickedShape < max) //Make sure that it only happens in the case of the cubes
 	{
 		glm::vec4 trans_vec = GetShapeTransformation()*glm::vec4(0, 0, 0, 1);
 		//move the relevent control point
-		curve->MoveControlPoint((pickedShape - MIN_CTRL), (pickedShape - MIN_CTRL), no_preservation, trans_vec);
+		curve->MoveControlPoint((pickedShape - min), (pickedShape - min), no_preservation, trans_vec);
 		//move the relevent cube incident to that specific control point
-		shapes[1]->GetMesh()->InitLine(curve->GetLine(30));
+		shapes[num_of_shape]->GetMesh()->InitLine(curve->GetLine(30));
 	}
 }
 
@@ -196,16 +274,22 @@ void Game::Motion()
 
 void Game::MoveControlCubes()
 {
+	MoveControlCubesForCurve(curve, MIN_CTRL, MAX_CTRL);
+	MoveControlCubesForCurve(curve_two, MIN_CTRL_TWO, MAX_CTRL_TWO);
+}
+
+void Game::MoveControlCubesForCurve(Bezier1D *curve, int min, int max)
+{
 	int old_picked_shape = pickedShape;
 	glm::vec3 control_point;
 
-	for (int i = MIN_CTRL; i < MAX_CTRL; i++)
+	for (int i = min; i < max; i++)
 	{
-		if (!((i - 2) % 4) == 0 && i != MAX_CTRL - 1)
+		if (!((i - 2) % 4) == 0 && i != max - 1)
 		{
 			pickedShape = i;
 			glm::vec4 curr_pos = GetShapeTransformation()*glm::vec4(0, 0, 0, 1);
-			control_point = *(curve->GetControlPoint((i - MIN_CTRL) / 4, (i - MIN_CTRL) % 4)).GetPos();
+			control_point = *(curve->GetControlPoint((i - min) / 4, (i - min) % 4)).GetPos();
 			control_point = (control_point)-glm::vec3(curr_pos);
 			shapeTransformation(xGlobalTranslate, control_point.x);
 			shapeTransformation(yGlobalTranslate, control_point.y);

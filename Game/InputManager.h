@@ -42,8 +42,6 @@ extern int MIN_CTRL;
 					glfwSetWindowShouldClose(window,GLFW_TRUE);
 				break;
 				case GLFW_KEY_SPACE:
-					//scn->HideShape(0);
-					//scn->Deactivate();
 					if (bezier_surface_flag == 0)
 					{
 						scn->addShape(5, -1, curr_mode);

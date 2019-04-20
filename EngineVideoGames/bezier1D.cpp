@@ -18,14 +18,14 @@ void print_mat(glm::mat4 mat_to_print)
 
 Bezier1D::Bezier1D(void)
 {
-	AddSegment(glm::mat4(glm::vec4(0.0, 0.0, 0.0, 1.0), glm::vec4(0.0, 5.0, 0.0, 1.0),
-		glm::vec4(5.0, 5.0, 0.0, 1.0), glm::vec4(5.0, 0.0, 0.0, 1.0)));
+	AddSegment(glm::mat4(glm::vec4(0.0, 0.0, 0.0, 1.0), glm::vec4(0.0, 2.0, 0.0, 1.0),
+		glm::vec4(2.0, 2.0, 0.0, 1.0), glm::vec4(2.0, 0.0, 0.0, 1.0)));
 
-	AddSegment(glm::mat4(glm::vec4(5.0, 0.0, 0.0, 1.0), glm::vec4(5.0, -5.0, 0.0, 1.0),
-		glm::vec4(10.0, -5.0, 0.0, 1.0), glm::vec4(10.0, 0.0, 0.0, 1.0)));
+	AddSegment(glm::mat4(glm::vec4(2.0, 0.0, 0.0, 1.0), glm::vec4(2.0, -2.0, 0.0, 1.0),
+		glm::vec4(4.0, -2.0, 0.0, 1.0), glm::vec4(4.0, 0.0, 0.0, 1.0)));
 
-	AddSegment(glm::mat4(glm::vec4(10.0, 0.0, 0.0, 1.0), glm::vec4(10.0, 5.0, 0.0, 1.0),
-		glm::vec4(15.0, 5.0, 0.0, 1.0), glm::vec4(15.0, 0.0, 0.0, 1.0)));
+	AddSegment(glm::mat4(glm::vec4(4.0, 0.0, 0.0, 1.0), glm::vec4(4.0, 2.0, 0.0, 1.0),
+		glm::vec4(6.0, 2.0, 0.0, 1.0), glm::vec4(6.0, 0.0, 0.0, 1.0)));
 }
 
 Bezier1D::Bezier1D(std::vector<glm::mat4> ctrlPointsVec)
@@ -97,7 +97,6 @@ void Bezier1D::MoveControlPoint(int segment, int indx, bool preserveC1, glm::vec
 	glm::vec4 oldPosition = segments.at(seg_num)[indx_num];
 	glm::vec4 direction = newPosition - oldPosition;
 	segments.at(seg_num)[indx_num] = newPosition;
-	//std::cout << "indx is: " << indx << std::endl;
 	bool start_ctrl = ((seg_num) == 0 && (indx_num) == 0);
 	bool end_ctrl = (seg_num == segments.size() - 1 && indx_num == 3);
 

@@ -5,6 +5,8 @@
 class Game : public Scene
 {
 	Bezier1D *curve;
+	Bezier1D *curve_two;
+
 public:
 	Game(void);
 	Game(glm::vec3 position, float angle, float hwRelation, float near, float far);
@@ -16,7 +18,9 @@ public:
 	//void ControlPointUpdate();
 	void WhenRotate();
 	void WhenTranslate();
+	void WhenTranslateForCurve(Bezier1D *curve, int min, int max, int num_of_shape);
 	void Motion();
 	void MoveControlCubes();
+	void MoveControlCubesForCurve(Bezier1D *curve, int min, int max);
 };
 
