@@ -161,7 +161,7 @@ void Scene::shapeTransformation(int type,float amt)
 				}
 			break;
 		case zLocalTranslate:
-			if(pickedShape ==-1)
+			if(pickedShape == -1)
 				myTranslate(vec3(0,0,amt),1);
 			else
 			{
@@ -193,8 +193,9 @@ void Scene::shapeTransformation(int type,float amt)
 		case zGlobalTranslate:
 			if(pickedShape ==-1)
 				myTranslate(vec3(0,0,amt/5.0),0);
-							else
+			else
 			{
+				//std::cout << "pickedShape in Z is: " << pickedShape << std::endl;
 				int i = pickedShape;
 				for (; chainParents[i] > -1; i = chainParents[i]);
 				shapes[i]->myTranslate(vec3(0,0,amt),0);

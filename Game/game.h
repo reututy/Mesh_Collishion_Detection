@@ -12,6 +12,7 @@ public:
 	Game(glm::vec3 position, float angle, float hwRelation, float near, float far);
 	~Game(void);
 	void Init();
+	int CreateCurveControlPoints(int counter, Bezier1D *curve);
 	void addShape(int type, int parent, unsigned int mode);
 	//void Update( glm::mat4 MVP ,glm::mat4 *jointTransforms,const int length,const int  shaderIndx);
 	void Update(const glm::mat4 &MVP, const glm::mat4 &Normal, Shader *s);

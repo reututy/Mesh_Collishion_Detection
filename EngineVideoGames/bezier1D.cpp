@@ -45,7 +45,7 @@ IndexedModel Bezier1D::GetLine(int resT)
 {
 	IndexedModel index_model;
 	float t = 0.0;
-	float t_inc = (float)1 / (resT - 1);
+	float t_inc = (float) 1 / (resT - 1);
 	glm::vec3 vec_pos;
 
 	for (int j = 0; j < segments.size(); j++)
@@ -54,7 +54,7 @@ IndexedModel Bezier1D::GetLine(int resT)
 		for (int i = 0; i < resT; i++)
 		{
 			vec_pos = *(GetVertex(j, t).GetPos());
-			index_model.positions.push_back(vec_pos);	//TODO: verify order of insertion
+			index_model.positions.push_back(vec_pos);
 			index_model.colors.push_back(BLUE);
 			index_model.indices.push_back(j*resT + i);
 			t += t_inc;

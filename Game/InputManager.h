@@ -6,7 +6,6 @@
 #define NO_OF_MODES 8
 
 int curr_mode = 7;
-bool bezier_surface_flag = 0;
 char modes_names[8][20] = { "POINTS", "LINES" , "LINE_STRIP", "LINE_LOOP", "TRIANGLES", "TRIANGLE_STRIP", "TRIANGLE_FAN",  "QUADS" };
 
 extern int MAX_CTRL;
@@ -42,14 +41,11 @@ extern int MIN_CTRL;
 					glfwSetWindowShouldClose(window,GLFW_TRUE);
 				break;
 				case GLFW_KEY_SPACE:
-					if (bezier_surface_flag == 0)
+					scn->addShape(5, -1, curr_mode);
+					for (int i = MIN_CTRL - 2; i < MAX_CTRL; i++) 
 					{
-						scn->addShape(5, -1, curr_mode);
-						bezier_surface_flag++;
-						//for (int i = MIN_CTRL - 2; i < MAX_CTRL; i++) 
-						//{
-						//	scn->HideShape(i);
-						//}
+						if(i != 2 && i != 6 && i !=  10)
+							scn->HideShape(i);
 					}
 					/*
 					scn->HideShape(0);
