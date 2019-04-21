@@ -110,6 +110,7 @@ void Game::Init()
 	addShape(BezierLine, -1, LINE_STRIP);
 	num_of_curve_two = counter++;
 	MIN_CTRL_TWO = counter;
+	shapes[num_of_curve_two]->GetMesh()->InitLine(curve_two->GetLine(30));
 
 	counter = CreateCurveControlPoints(counter, curve_two);
 	
