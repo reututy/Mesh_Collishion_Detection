@@ -41,10 +41,18 @@ extern int MIN_CTRL;
 					glfwSetWindowShouldClose(window,GLFW_TRUE);
 				break;
 				case GLFW_KEY_SPACE:
+					scn->SetPickedShape(1);
 					scn->addShape(5, -1, curr_mode);
 					for (int i = MIN_CTRL - 2; i < MAX_CTRL; i++) 
 					{
 						if(i != 2 && i != 6 && i !=  10)
+							scn->HideShape(i);
+					}
+					scn->SetPickedShape(17);
+					scn->addShape(5, -1, curr_mode);
+					for (int i = 17; i < 30; i++)
+					{
+						if (i != 21 && i != 25)
 							scn->HideShape(i);
 					}
 					/*

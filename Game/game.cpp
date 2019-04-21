@@ -41,7 +41,16 @@ Game::Game(glm::vec3 position, float angle, float hwRelation, float near, float 
 
 	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(4.0, 0.0, 0.0, 1.0), glm::vec4(4.0, 2.0, 0.0, 1.0),
 		glm::vec4(6.0, 2.0, 0.0, 1.0), glm::vec4(6.0, 0.0, 0.0, 1.0)));
+	/*
+	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(10.0, 0.0, 0.0, 1.0), glm::vec4(10.0, 2.0, 0.0, 1.0),
+		glm::vec4(12.0, 2.0, 0.0, 1.0), glm::vec4(12.0, 0.0, 0.0, 1.0)));
 
+	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(12.0, 0.0, 0.0, 1.0), glm::vec4(12.0, -2.0, 0.0, 1.0),
+		glm::vec4(14.0, -2.0, 0.0, 1.0), glm::vec4(14.0, 0.0, 0.0, 1.0)));
+
+	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(14.0, 0.0, 0.0, 1.0), glm::vec4(14.0, 2.0, 0.0, 1.0),
+		glm::vec4(16.0, 2.0, 0.0, 1.0), glm::vec4(16.0, 0.0, 0.0, 1.0)));
+		*/
 	curve = new Bezier1D(ctrlPointsVec_one);
 	
 	ctrlPointsVec_two.push_back(glm::mat4(glm::vec4(-1.0, 0.0, 0.0, 1.0), glm::vec4(-1.0, 2.0, 0.0, 1.0),
@@ -69,27 +78,41 @@ void Game::addShape(int type, int parent, unsigned int mode)
 		shapes.push_back(new Shape(type, mode));
 	else
 	{
-		if (type == BezierLine)
-			shapes.push_back(new Shape(curve, 30, 30, false, mode));
-		else
-			shapes.push_back(new Shape(curve, 30, 30, true, mode));
+		if (pickedShape == 1)
+		{
+			if (type == BezierLine)
+				shapes.push_back(new Shape(curve, 30, 30, false, mode));
+			else
+				shapes.push_back(new Shape(curve, 30, 30, true, mode));
+		}
+		else if (pickedShape == 17)
+		{
+			if (type == BezierLine)
+				shapes.push_back(new Shape(curve_two, 30, 30, false, mode));
+			else
+				shapes.push_back(new Shape(curve_two, 30, 30, true, mode));
+		}
 	}
 }
 
 void Game::Init()
 {
+	//Add Axis
 	addShape(Axis, -1, LINES);
+	//Add curve
+	pickedShape = 1;
 	addShape(BezierLine, -1, LINE_STRIP);
-
-	//translate all scene away from camera
+	
+	//Translate all scene away from camera
 	myTranslate(glm::vec3(0, 0, -20), 0);
 
 	//Axis scale:
 	pickedShape = 0;
-	shapeTransformation(yScale, 10);
-	shapeTransformation(xScale, 10);
-	shapeTransformation(zScale, 10);
+	shapeTransformation(yScale, 20);
+	shapeTransformation(xScale, 20);
+	shapeTransformation(zScale, 20);
 
+	//Add Cube for copying
 	addShape(Cube, -1, TRIANGLES);
 	pickedShape = 2;
 	HideShape(pickedShape);
@@ -97,6 +120,18 @@ void Game::Init()
 	int counter = MIN_CTRL;
 	counter = CreateCurveControlPoints(counter, curve);
 	MAX_CTRL = counter;
+
+	//Translate curve to x=8
+	//pickedShape = 1;
+	//shapeTransformation(xGlobalTranslate, 4);
+
+	//MoveControlCubesByVec(curve, MIN_CTRL, MAX_CTRL, glm::vec3(4.0, 0.0, 0.0));
+
+	/*for (int i = MIN_CTRL; i < MAX_CTRL; i++)
+	{
+		pickedShape = i;
+		shapeTransformation(xGlobalTranslate, 4 / CONTROL_POINT_SCALE);
+	}*/
 	
 	//For not making a mess with the numbers
 	addShape(Cube, -1, TRIANGLES);
@@ -107,13 +142,22 @@ void Game::Init()
 	pickedShape = counter++;
 	HideShape(pickedShape);
 	
+	pickedShape = 17;
 	addShape(BezierLine, -1, LINE_STRIP);
 	num_of_curve_two = counter++;
 	MIN_CTRL_TWO = counter;
 	shapes[num_of_curve_two]->GetMesh()->InitLine(curve_two->GetLine(30));
 
 	counter = CreateCurveControlPoints(counter, curve_two);
+
+	/*
+	glm::vec3 control_point;
+	pickedShape = 29;
+	control_point = *(curve->GetControlPoint(2, 3)).GetPos();
+	shapeTransformation(xGlobalTranslate, control_point.x - 4 / CONTROL_POINT_SCALE);
+	*/
 	
+
 	MAX_CTRL_TWO = counter;
 	pickedShape = -1;
 
@@ -262,6 +306,26 @@ void Game::MoveControlCubesForCurve(Bezier1D *curve, int min, int max)
 			glm::vec4 curr_pos = GetShapeTransformation()*glm::vec4(0, 0, 0, 1);
 			control_point = *(curve->GetControlPoint((i - min) / 4, (i - min) % 4)).GetPos();
 			control_point = (control_point)-glm::vec3(curr_pos);
+			shapeTransformation(xGlobalTranslate, control_point.x);
+			shapeTransformation(yGlobalTranslate, control_point.y);
+			shapeTransformation(zGlobalTranslate, control_point.z);
+		}
+	}
+	pickedShape = old_picked_shape;
+}
+
+void Game::MoveControlCubesByVec(Bezier1D *curve, int min, int max, glm::vec3 curr_pos)
+{
+	int old_picked_shape = pickedShape;
+	glm::vec3 control_point;
+
+	for (int i = min; i < max; i++)
+	{
+		if (!((i - 2) % 4) == 0 && i != max - 1)
+		{
+			pickedShape = i;
+			control_point = *(curve->GetControlPoint((i - min) / 4, (i - min) % 4)).GetPos();
+			control_point = control_point-curr_pos;
 			shapeTransformation(xGlobalTranslate, control_point.x);
 			shapeTransformation(yGlobalTranslate, control_point.y);
 			shapeTransformation(zGlobalTranslate, control_point.z);

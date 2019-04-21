@@ -195,7 +195,6 @@ void Scene::shapeTransformation(int type,float amt)
 				myTranslate(vec3(0,0,amt/5.0),0);
 			else
 			{
-				//std::cout << "pickedShape in Z is: " << pickedShape << std::endl;
 				int i = pickedShape;
 				for (; chainParents[i] > -1; i = chainParents[i]);
 				shapes[i]->myTranslate(vec3(0,0,amt),0);
@@ -504,4 +503,14 @@ void Scene::ScaleAllDirections(int factor)
 	shapeTransformation(xScale,factor);
 	shapeTransformation(yScale,factor);
 	shapeTransformation(zScale,factor);
+}
+
+int Scene::GetPickedShape()
+{
+	return pickedShape;
+}
+
+void Scene::SetPickedShape(int value)
+{
+	pickedShape = value;
 }

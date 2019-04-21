@@ -23,5 +23,6 @@ public:
 	void Motion();
 	void MoveControlCubes();
 	void MoveControlCubesForCurve(Bezier1D *curve, int min, int max);
+	void MoveControlCubesByVec(Bezier1D *curve, int min, int max, glm::vec3 curr_pos);
 };
 
