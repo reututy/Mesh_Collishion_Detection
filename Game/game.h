@@ -4,8 +4,16 @@
 
 class Game : public Scene
 {
+private:
 	Bezier1D *curve;
 	Bezier1D *curve_two;
+	int num_of_shapes;
+	int MIN_CTRL;
+	int MAX_CTRL;
+	int MIN_CTRL_TWO;
+	int MAX_CTRL_TWO;
+	//int num_of_curve;
+	//int num_of_curve_two;
 
 public:
 	Game(void);
@@ -23,6 +31,13 @@ public:
 	void Motion();
 	void MoveControlCubes();
 	void MoveControlCubesForCurve(Bezier1D *curve, int min, int max);
-	void MoveControlCubesByVec(Bezier1D *curve, int min, int max, glm::vec3 curr_pos);
+	Bezier1D* GetCurve();
+	Bezier1D* GetCurveTwo();
+	int GetNumOfShapes();
+	void SetNumOfShapes(int value);
+	int GetMINCTRL();
+	int GetMAXCTRL();
+	int GetMINCTRLTWO();
+	int GetMAXCTRLTWO();
 };
 

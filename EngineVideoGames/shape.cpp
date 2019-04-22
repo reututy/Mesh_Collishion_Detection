@@ -45,7 +45,7 @@ void Shape::AddTexture(const std::string& textureFileName)
 }
 
 
-void Shape::Draw( const Shader& shader)
+void Shape::Draw(const Shader& shader)
 {
 //	if(tex)
 //		tex->Bind();
