@@ -19,6 +19,8 @@ MeshConstructor::MeshConstructor(const int type)
 		 break;
 	case Octahedron:
 		 InitMesh(OctahedronGenerator());
+
+		 BBH;
 		 break;
 	case Tethrahedron:
 		 InitMesh(TethrahedronGenerator());

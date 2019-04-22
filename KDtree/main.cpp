@@ -42,8 +42,6 @@ void printVector(Node::vecType pt)
 
 int main(int argc, char ** argv)
 { 
-   
-	
 	//make a list of vectors out of the testpoints array
 	std::list<Node::vecType> point_list;
 	for(auto i = 0; i < _numpts; i++ )

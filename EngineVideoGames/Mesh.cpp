@@ -244,3 +244,30 @@ IndexedModel OctahedronGenerator()
 	return model;
 }
 
+// Functions for BoundingBox:
+
+BoundingBox::BoundingBox()
+{
+	center = glm::vec3(0, 0, 0);     // center coordinates
+	size;       // distance between the center of the box to its side in each dimension 
+	xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
+	yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		 
+	zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
+}
+
+BoundingBox::BoundingBox(glm::vec3 center, glm::vec3 size, glm::vec3 xInit, glm::vec3 yInit, glm::vec3 zInit)
+{
+	this->center = center;
+	this->size = size;
+	this->xInit = xInit;
+	this->yInit = yInit;
+	this->zInit = zInit;
+}
+
+BoundingBox::~BoundingBox() {}
+
+void BoundingBox::checkCollision()
+{
+
+}
+

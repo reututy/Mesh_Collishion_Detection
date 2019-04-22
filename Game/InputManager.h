@@ -2,6 +2,7 @@
 #include "display.h"
 #include "game.h"
 #include <iostream>
+#include <math.h>
 
 #define NO_OF_MODES 8
 
@@ -30,6 +31,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 {
 	Game *scn = (Game*)glfwGetWindowUserPointer(window);
 	glm::vec3 pos = *(scn->GetCurve()->GetVertex(0, 0).GetPos());
+	glm::vec3 axis;
 	float right = pos.x;
 	float left = pos.x;
 	float up = pos.y;
@@ -39,6 +41,13 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	float t = 0.0;
 	int resT = scn->GetCurve()->GetResolution();
 	float t_inc = (float)1 / (resT - 1);
+	float alfa_rad;
+	float alfa_deg;
+	float axis_dist;
+	float box_dist;
+	float dot;
+	float kefel;
+	int sign;
 
 	if(action == GLFW_PRESS || action == GLFW_REPEAT)
 	{
@@ -104,23 +113,34 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 						t += t_inc;
 					}
 				}
-				/*
-				std::cout << "left: " << left << std::endl;
-				std::cout << "right: " << right << std::endl;
 				std::cout << "up: " << up << std::endl;
 				std::cout << "down: " << down << std::endl;
-				std::cout << "near: " << near << std::endl;
-				std::cout << "far: " << far << std::endl;
-				std::cout << "(right - left): " << (right - left) << std::endl;
-				std::cout << "(up - down): " << up - down << std::endl;
-				std::cout << "(near - far): " << near - far << std::endl;*/
 
+				//Translate the box to where the shape is:
 				scn->SetPickedShape(scn->GetNumOfShapes());
-				//pos = *(scn->GetCurve()->GetVertex(0, 0).GetPos());
 				scn->shapeTransformation(Scene::transformations::xGlobalTranslate, ((right - left) / 2) + left);
 				scn->shapeTransformation(Scene::transformations::yGlobalTranslate, ((up - down) / 2) + down);
-				scn->setParent(32, 30);
+				/*
+				//Rotate the box to where the shape is:
+				axis = scn->GetCurve()->GetAxis();
+				axis_dist = glm::length(glm::vec4(axis, 0));
+				box_dist = glm::length(glm::vec4(1, 0, 0, 0));
+				dot = glm::dot(glm::vec4(1, 0, 0, 0), glm::vec4(axis, 0));
+				kefel = axis_dist * box_dist;
+				alfa_rad = glm::acos((float) (dot / kefel));
+				alfa_deg = alfa_rad * 180 / M_PI;
+				sign = (axis.x > 0 && axis.y > 0) || ((axis.x < 0 && axis.y < 0)) ? 1 : -1;
+				scn->shapeTransformation(Scene::transformations::zLocalRotate, sign*alfa_deg);
+				
+				std::cout << "scn->GetCurve()->GetAxis(): " << scn->GetCurve()->GetAxis().x << " " << scn->GetCurve()->GetAxis().y << " " << scn->GetCurve()->GetAxis().y << " " << std::endl;
+				/*std::cout << "axis_dist: " << axis_dist << std::endl;
+				std::cout << "box_dist: " << box_dist << std::endl;
+				std::cout << "dot: " << dot << std::endl;
+				std::cout << "kefel: " << kefel << std::endl;
+				std::cout << "alfa_deg: " << alfa_deg << std::endl;
+				std::cout << "alfa_rad: " << alfa_rad << std::endl;*/
 
+				scn->setParent(32, 30);
 				scn->SetPickedShape(scn->GetNumOfShapes());
 				scn->shapeTransformation(Scene::transformations::xScale, (right - left) / 2);
 				scn->shapeTransformation(Scene::transformations::yScale, (up - down) / 2);
@@ -210,5 +230,4 @@ void init(Display &display)
 	display.addKeyCallBack(key_callback);
 	display.addMouseCallBacks(mouse_callback,scroll_callback,cursor_position_callback);
 	display.addResizeCallBack(window_size_callback);
-
 }

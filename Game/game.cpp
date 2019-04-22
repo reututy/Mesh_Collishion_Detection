@@ -97,6 +97,7 @@ void Game::addShape(int type, int parent, unsigned int mode)
 
 void Game::Init()
 {	
+	/*
 	//Add Axis
 	addShape(Axis, -1, LINES);
 	//Add curve
@@ -139,12 +140,10 @@ void Game::Init()
 
 	MAX_CTRL_TWO = num_of_shapes;
 	pickedShape = -1;
-	
+	*/
 
-	/*
 	addShape(Axis,-1,LINES); //0 Axis
 	addShape(Octahedron,-1,TRIANGLES); //1 Octahedron
-	//addShapeFromFile("../res/objs/torus.obj",-1,TRIANGLES);
 	addShapeCopy(1,-1,TRIANGLES); //2 Octahedron
 	addShape(Cube,1,LINE_LOOP);  //3 Cube belong to 1
 	addShapeCopy(3,2,LINE_LOOP); //4 Cube belong toc 2
@@ -174,7 +173,19 @@ void Game::Init()
 	shapeTransformation(zScale,3.30f);
 
 	pickedShape = -1;
-	Activate();
+	//Activate();
+
+	/*
+	std::list<Node::vecType> point_list;
+	for (int i = 0; i < _numpts; i++)
+	{
+
+		point_list.push_back(shapes[1]->GetMesh());
+	}
+
+	Kdtree kd;
+	kd.makeTree(point_list);
+	kd.printTree(kd.getRoot());
 	*/
 }
 

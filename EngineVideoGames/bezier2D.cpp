@@ -63,8 +63,8 @@ IndexedModel Bezier2D::GetSurface(int resT, int resS)
 
 			vec_pos_top_left = *GetVertex(segT, segS, t, s).GetPos();
 			vec_pos_top_right = *GetVertex(segT, segS, t + t_inc, s).GetPos();
-			vec_pos_bottom_left = *GetVertex(segT, segS, t, s + s_inc).GetPos();
 			vec_pos_bottom_right = *GetVertex(segT, segS, t + t_inc, s + s_inc).GetPos();
+			vec_pos_bottom_left = *GetVertex(segT, segS, t, s + s_inc).GetPos();
 			index_model.positions.push_back(vec_pos_top_left);
 			index_model.positions.push_back(vec_pos_top_right);
 			index_model.positions.push_back(vec_pos_bottom_right);

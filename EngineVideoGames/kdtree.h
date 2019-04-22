@@ -20,14 +20,15 @@
 #include <utility>
 #include "glm/glm.hpp"
 
-	 const int N = 3;
+const int N = 3;
+
 class Node
 {
  public:
 	 typedef glm::vec4 vecType;
-	 Node* left ;// = std::unique_ptr<Node>( new Node(3) );
+	 Node* left; // = std::unique_ptr<Node>( new Node(3) );
 	 Node* right; //( new Node(3));
-	vecType data; 
+	 vecType data; 
 	 
      //default constructor
 	 Node(int _n);
@@ -38,15 +39,13 @@ class Node
 	 //default deconstructor
 	 ~Node();
 	 
-	     
-
 };
 
 class Kdtree
 {
 
  public:
-	//typedef float                numType;
+	//typedef float numType;
 	typedef Node::vecType vecType;
 		
 	//default constructor
@@ -68,18 +67,18 @@ class Kdtree
 	*   and really works best for small trees 
 	*   as a test of tree construction.
 	*/  
-	void printTree( Node* head );
+	void printTree(Node* head);
 	
 	//function for finding the median of a list of points
 	vecType findMedian(int axis, std::list<vecType> &plist, std::list<vecType> &left, 
 								std::list<vecType> &right );
 	//function for making the tree
-	void makeTree( std::list<vecType> &plist );
+	void makeTree(std::list<vecType> &plist);
 	
 	
  private:
 	//helper for makeTree 
-	void _makeTree( Node* head, std::list<vecType> &plist, int depth );
+	void _makeTree(Node* head, std::list<vecType> &plist, int depth);
 	
 	Node* root;
 };
