@@ -29,13 +29,16 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	Game *scn = (Game*)glfwGetWindowUserPointer(window);
-	glm::vec3 pos = *(scn->GetCurve()->GetControlPoint(0, 0).GetPos());
+	glm::vec3 pos = *(scn->GetCurve()->GetVertex(0, 0).GetPos());
 	float right = pos.x;
 	float left = pos.x;
 	float up = pos.y;
 	float down = pos.y;
-	float near = pos.z;
-	float far = pos.z;
+	float near = pos.y;
+	float far = pos.y;
+	float t = 0.0;
+	int resT = scn->GetCurve()->GetResolution();
+	float t_inc = (float)1 / (resT - 1);
 
 	if(action == GLFW_PRESS || action == GLFW_REPEAT)
 	{
@@ -64,15 +67,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				}
 
 				//Cube for curve
-				scn->addShape(Scene::Shapes::Cube, 1, Scene::modes::LINE_LOOP);
+				scn->addShape(Scene::Shapes::Cube, -1, Scene::modes::LINE_LOOP);
 				scn->SetNumOfShapes(scn->GetNumOfShapes() + 1);
 				
 				//create surrounding 3d of curve
 				for (int seg = 0; seg < scn->GetCurve()->GetNumSegs(); seg++)
 				{
-					for (int index = 0; index < 4; index++)
+					t = 0.0;
+					for (int index = 0; index < resT; index++)
 					{
-						pos = *(scn->GetCurve()->GetControlPoint(seg, index).GetPos());
+						pos = *(scn->GetCurve()->GetVertex(seg, t).GetPos());
 						if (pos.x > right)
 						{
 							right = pos.x;
@@ -89,16 +93,18 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 						{
 							down = pos.y;
 						}
-						if (pos.z > far)
+						if (pos.y > far)
 						{
-							far = pos.z;
+							far = pos.y;
 						}
-						if (pos.z < near)
+						if (pos.y < near)
 						{
-							near = pos.z;
+							near = pos.y;
 						}
+						t += t_inc;
 					}
 				}
+				/*
 				std::cout << "left: " << left << std::endl;
 				std::cout << "right: " << right << std::endl;
 				std::cout << "up: " << up << std::endl;
@@ -107,21 +113,23 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				std::cout << "far: " << far << std::endl;
 				std::cout << "(right - left): " << (right - left) << std::endl;
 				std::cout << "(up - down): " << up - down << std::endl;
-				std::cout << "(near - far): " << near - far << std::endl;
+				std::cout << "(near - far): " << near - far << std::endl;*/
+
 				scn->SetPickedShape(scn->GetNumOfShapes());
-				//scn->shapeTransformation(Scene::transformations::xScale, 0.1);
-				//scn->shapeTransformation(Scene::transformations::yScale, 0.1);
+				//pos = *(scn->GetCurve()->GetVertex(0, 0).GetPos());
+				scn->shapeTransformation(Scene::transformations::xGlobalTranslate, ((right - left) / 2) + left);
+				scn->shapeTransformation(Scene::transformations::yGlobalTranslate, ((up - down) / 2) + down);
+				scn->setParent(32, 30);
+
+				scn->SetPickedShape(scn->GetNumOfShapes());
 				scn->shapeTransformation(Scene::transformations::xScale, (right - left) / 2);
 				scn->shapeTransformation(Scene::transformations::yScale, (up - down) / 2);
-				//scn->shapeTransformation(Scene::transformations::zScale, (near - far) / 2);
+				scn->shapeTransformation(Scene::transformations::zScale, (near - far) / 2);
 
-				/*
-				scn->addShape(Scene::Shapes::Cube, 2, Scene::modes::LINE_LOOP);
-				scn->SetPickedShape(scn->GetNumOfShapes());
-				scn->shapeTransformation(Scene::transformations::xScale, 10);
-				scn->shapeTransformation(Scene::transformations::yScale, 5);
-				//shapeTransformation(zScale, 3.30f);*/
-
+				//scn->ReadPixel();
+				//scn->SetPickedShape(-1);
+				//scn->Activate();
+				
 				/*
 				scn->HideShape(0);
 				if(scn->IsActive())

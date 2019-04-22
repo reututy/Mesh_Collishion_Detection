@@ -47,6 +47,7 @@ IndexedModel Bezier1D::GetLine(int resT)
 	float t = 0.0;
 	float t_inc = (float) 1 / (resT - 1);
 	glm::vec3 vec_pos;
+	res = resT;
 
 	for (int j = 0; j < segments.size(); j++)
 	{
@@ -152,4 +153,9 @@ glm::vec3 Bezier1D::GetAxis()
 std::vector<glm::mat4> Bezier1D::GetSegments()
 {
 	return segments;
+}
+
+int Bezier1D::GetResolution()
+{
+	return res;
 }

@@ -50,7 +50,6 @@ IndexedModel Bezier2D::GetSurface(int resT, int resS)
 		{
 			t = 0.0;
 		}
-		//std::cout << "SegT is: " << segT << "  Iteration No: " << main_curve_runner << std::endl;
 		for (int second_curve_runner = 0; second_curve_runner < resS*circularSubdivision - 1; second_curve_runner++)
 		{
 			if (main_curve_runner != 0 && main_curve_runner % resS == 0)

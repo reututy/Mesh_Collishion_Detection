@@ -140,14 +140,14 @@ void Game::Init()
 	MAX_CTRL_TWO = num_of_shapes;
 	pickedShape = -1;
 	
-	
+
 	/*
-	addShape(Axis,-1,LINES); //0
-	addShape(Octahedron,-1,TRIANGLES); //1
+	addShape(Axis,-1,LINES); //0 Axis
+	addShape(Octahedron,-1,TRIANGLES); //1 Octahedron
 	//addShapeFromFile("../res/objs/torus.obj",-1,TRIANGLES);
-	addShapeCopy(1,-1,TRIANGLES); //2
-	addShape(Cube,1,LINE_LOOP);  //3
-	addShapeCopy(3,2,LINE_LOOP); //4
+	addShapeCopy(1,-1,TRIANGLES); //2 Octahedron
+	addShape(Cube,1,LINE_LOOP);  //3 Cube belong to 1
+	addShapeCopy(3,2,LINE_LOOP); //4 Cube belong toc 2
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0,0,-20),0);

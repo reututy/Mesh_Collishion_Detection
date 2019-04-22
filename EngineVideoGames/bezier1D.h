@@ -5,6 +5,7 @@ class Bezier1D
 {
 	//each line in the matrix represents x,y,z,w of a control point
 	std::vector<glm::mat4> segments;
+	int res;
 
 public:
 	Bezier1D(void);
@@ -20,5 +21,6 @@ public:
 	glm::mat4 GetSegmentsPosition(int segment);
 	glm::vec3 GetAxis();
 	std::vector<glm::mat4> GetSegments();
+	int GetResolution();
 };
 
