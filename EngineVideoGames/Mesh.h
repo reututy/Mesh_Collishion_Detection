@@ -33,6 +33,7 @@ public:
 		}
 	}
 
+	std::vector<glm::vec3>* GetPositions();
 };
 
 struct Vertex

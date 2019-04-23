@@ -31,6 +31,11 @@ void IndexedModel::CalcNormals()
 	}
 }
 
+std::vector<glm::vec3>* IndexedModel::GetPositions()
+{
+	return &positions;
+}
+
 
 IndexedModel CubeTriangles()
 {
@@ -188,7 +193,7 @@ IndexedModel OctahedronGenerator()
 {
 	Vertex vertices[] =
 	{
-		Vertex(glm::vec3( 0, 0,-1), glm::vec2(1, 0), glm::vec3(1, 1, -1),glm::vec3(0, 0, 1)),
+		Vertex(glm::vec3(0, 0,-1), glm::vec2(1, 0), glm::vec3(1, 1, -1),glm::vec3(0, 0, 1)),
 		Vertex(glm::vec3(0, 1, 0), glm::vec2(0, 0), glm::vec3(1, 1, -1),glm::vec3(0, 0, 1)),
 		Vertex(glm::vec3(1, 0, 0), glm::vec2(0, 1), glm::vec3(1, 1, -1),glm::vec3(0, 0, 1)),
 		

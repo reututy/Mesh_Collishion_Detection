@@ -5,24 +5,40 @@
 #include "IndexBuffer.hpp"
 #include "bezier2D.h"
 #include "obj_loader.h"
+#include <iostream>
 
 
 MeshConstructor::MeshConstructor(const int type)
 {
+	IndexedModel model;
+	std::vector<glm::vec3>* positions;
+	std::list<glm::vec4> points;
+	Kdtree kd;
+
 	switch (type)
 	{
 	case Axis:	
 		InitLine(AxisGenerator());
 		break;
 	case Cube:
-		 InitMesh(CubeTriangles());
-		 break;
+		model = CubeTriangles();
+		InitMesh(model);
+		positions = model.GetPositions();
+		//std::copy(positions->begin(), positions->end(), std::back_inserter(points));
+		//points.assign(positions->begin(), positions->end());
+		for (int i = 0; i < positions->size(); i++)
+			points.push_back(glm::vec4(positions->at(i),1));
+		kd.makeTree(points);
+		kd.printTree(kd.getRoot());
+		std::cout << kd.getRoot()->data.x << " " << kd.getRoot()->data.y << " " << kd.getRoot()->data.z << " " << std::endl;
+
+		break;
 	case Octahedron:
-		 InitMesh(OctahedronGenerator());
-		 break;
+		InitMesh(OctahedronGenerator());
+		break;
 	case Tethrahedron:
-		 InitMesh(TethrahedronGenerator());
-		 break;
+		InitMesh(TethrahedronGenerator());
+		break;
 	default:
 		break;
 	}
