@@ -25,16 +25,15 @@ const int N = 3;
 class Node
 {
  public:
-	 typedef glm::vec4 vecType;
 	 Node* left; // = std::unique_ptr<Node>( new Node(3) );
 	 Node* right; //( new Node(3));
-	 vecType data; 
+	 glm::vec4 data;
 	 
      //default constructor
 	 Node(int _n);
 	 
 	 //copy constructor
-	 Node(int _n, vecType _data);
+	 Node(int _n, glm::vec4 _data);
 	 
 	 //default deconstructor
 	 ~Node();
@@ -43,11 +42,14 @@ class Node
 
 class Kdtree
 {
+private:
+	//helper for makeTree 
+	void _makeTree(Node* head, std::list<glm::vec4> &plist, int depth);
+
+	Node* root;
+	int depth;
 
  public:
-	//typedef float numType;
-	typedef Node::vecType vecType;
-		
 	//default constructor
 	Kdtree();
 
@@ -61,7 +63,7 @@ class Kdtree
 	/*
 	* support function for printTree
 	*/
-	void print_data(vecType pt);
+	void print_data(glm::vec4 pt);
 		
 	/*  prints the tree
 	*   and really works best for small trees 
@@ -70,17 +72,15 @@ class Kdtree
 	void printTree(Node* head);
 	
 	//function for finding the median of a list of points
-	vecType findMedian(int axis, std::list<vecType> &plist, std::list<vecType> &left, 
-								std::list<vecType> &right );
+	glm::vec4 findMedian(int axis, std::list<glm::vec4> &plist, std::list<glm::vec4> &left,
+								std::list<glm::vec4> &right );
 	//function for making the tree
-	void makeTree(std::list<vecType> &plist);
-	
-	
- private:
-	//helper for makeTree 
-	void _makeTree(Node* head, std::list<vecType> &plist, int depth);
-	
-	Node* root;
+	void makeTree(std::list<glm::vec4> &plist);
+
+	void FindDepth(Node* head);
+
+	int GetDepth();
+
 };
 
 

@@ -13,7 +13,7 @@
 // implementation of Node Class
 
 Node::Node(int _n) { left=0; right=0;}
-Node::Node(int _n, vecType _data) : data(_data){left = 0; right = 0;}
+Node::Node(int _n, glm::vec4 _data) : data(_data){left = 0; right = 0;}
 
 Node::~Node(){}
 
@@ -27,10 +27,10 @@ Kdtree::~Kdtree(){}
 *
 *
 */
-Kdtree::vecType Kdtree::findMedian(int axis, std::list<Kdtree::vecType> &plist, std::list<Kdtree::vecType> &left, 
-							std::list<Kdtree::vecType> &right )
+glm::vec4 Kdtree::findMedian(int axis, std::list<glm::vec4> &plist, std::list<glm::vec4> &left,
+							std::list<glm::vec4> &right )
 {
-	Kdtree::vecType median;
+	glm::vec4 median;
 	int size = plist.size();
 	int med = (int)ceil( float(size) / float(2) );
 	int count = 0;
@@ -39,7 +39,7 @@ Kdtree::vecType Kdtree::findMedian(int axis, std::list<Kdtree::vecType> &plist, 
 		return plist.front();
 	
 	// Using lambda function here, to define comparison function--parametrized by 'axis'
-	plist.sort( [&](Kdtree::vecType& a, Kdtree::vecType& b){return a[axis] < b[axis];});
+	plist.sort( [&](glm::vec4& a, glm::vec4& b){return a[axis] < b[axis];});
 	
 	for ( auto& x : plist )
 	{
@@ -54,7 +54,7 @@ Kdtree::vecType Kdtree::findMedian(int axis, std::list<Kdtree::vecType> &plist, 
 	return median;
 }
 
-void Kdtree::print_data(vecType pt)
+void Kdtree::print_data(glm::vec4 pt)
 {
 	for( int i = 0; i < N; i++)
 	{
@@ -104,23 +104,24 @@ void Kdtree::printTree( Node* head )
 /*
 *  algorithm is based on http://en.wikipedia.org/wiki/Kd_tree
 */
-void Kdtree::makeTree(std::list<Kdtree::vecType>& plist)
+void Kdtree::makeTree(std::list<glm::vec4>& plist)
 {
 	Node* head = new Node(3);
 	Kdtree::_makeTree( head, plist, 0 );
 	Kdtree::root = head;
+	Kdtree::FindDepth(head);
 }
 
-void Kdtree::_makeTree( Node* head, std::list<Kdtree::vecType>& plist, int depth )
+void Kdtree::_makeTree(Node* head, std::list<glm::vec4>& plist, int depth)
 {	
 	if( !plist.empty() ) 
 	{
 		int k = N;
 		int axis = depth % k;
 		
-		std::list<Kdtree::vecType> left_list;
-		std::list<Kdtree::vecType> right_list;
-		Kdtree::vecType median = Kdtree::findMedian(axis, plist, left_list, right_list); 
+		std::list<glm::vec4> left_list;
+		std::list<glm::vec4> right_list;
+		glm::vec4 median = Kdtree::findMedian(axis, plist, left_list, right_list);
 		head->data = median;
 		
 		Node* left_node = new Node(k);
@@ -133,3 +134,40 @@ void Kdtree::_makeTree( Node* head, std::list<Kdtree::vecType>& plist, int depth
 		if (!right_list.empty()) head->right = right_node;
 	}
 } 
+
+void Kdtree::FindDepth(Node* head)
+{
+	//find the tree depth 
+	int maxdepth = 3;
+	int spaces = (int)pow(2, maxdepth + 1) - 1;
+	depth = 0;
+
+	//std::cout << "\n**** Print of Tree **********\n";
+	std::queue< Node* > current, next;
+	Node * temp = head;
+	current.push(temp);
+
+	while (!current.empty())
+	{
+		temp = current.front();
+		current.pop();
+
+		if (temp != nullptr)
+		{
+			//Kdtree::print_data(temp->data);
+			next.push(temp->left);
+			next.push(temp->right);
+		}
+		if (current.empty())
+		{
+			depth++;
+			//std::cout << "level: " << depth << "\n";
+			std::swap(current, next);
+		}
+	}
+}
+
+int Kdtree::GetDepth()
+{
+	return depth;
+}
