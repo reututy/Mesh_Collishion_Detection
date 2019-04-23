@@ -19,8 +19,6 @@ MeshConstructor::MeshConstructor(const int type)
 		 break;
 	case Octahedron:
 		 InitMesh(OctahedronGenerator());
-
-		 BBH;
 		 break;
 	case Tethrahedron:
 		 InitMesh(TethrahedronGenerator());
@@ -88,7 +86,7 @@ void MeshConstructor::InitLine(IndexedModel &model){
 	is2D = false;
 }
 
-void MeshConstructor::InitMesh( IndexedModel &model){
+void MeshConstructor::InitMesh(IndexedModel &model){
 
 	int verticesNum = model.positions.size();
 	indicesNum = model.indices.size();

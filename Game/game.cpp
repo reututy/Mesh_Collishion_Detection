@@ -3,6 +3,7 @@
 
 #define CONTROL_POINT_SCALE 0.1
 #define PURGATORY -5000000
+#define BB_SCALE 4.f
 
 bool once = false;
 int num_of_curve = 1;
@@ -146,47 +147,72 @@ void Game::Init()
 	addShape(Octahedron,-1,TRIANGLES); //1 Octahedron
 	addShapeCopy(1,-1,TRIANGLES); //2 Octahedron
 	addShape(Cube,1,LINE_LOOP);  //3 Cube belong to 1
-	addShapeCopy(3,2,LINE_LOOP); //4 Cube belong toc 2
+	addShapeCopy(3,2,LINE_LOOP); //4 Cube belong to 2
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0,0,-20),0);
 
+	//Scale the Axis:
 	pickedShape = 0;
-	shapeTransformation(yScale,10);
-	shapeTransformation(xScale,10);
-	shapeTransformation(zScale,10);
+	shapeTransformation(yScale, 10);
+	shapeTransformation(xScale, 10);
+	shapeTransformation(zScale, 10);
 
 	ReadPixel();
 
 	pickedShape = 2;
-	shapeTransformation(zLocalRotate,45);
+	shapeTransformation(zLocalRotate, 45);
+	shapeTransformation(xGlobalTranslate, 10);
 
 	pickedShape = 1;
-	shapeTransformation(zGlobalTranslate,-10);
-	shapeTransformation(yScale,3.30f);
-	shapeTransformation(xScale,3.30f);
-	shapeTransformation(zScale,3.30f);
+	//shapeTransformation(xGlobalTranslate, -10);
+	shapeTransformation(yScale, BB_SCALE);
+	shapeTransformation(xScale, BB_SCALE);
+	shapeTransformation(zScale, BB_SCALE);
 
 	pickedShape = 3;
-	shapeTransformation(yScale,3.30f);
-	shapeTransformation(xScale,3.30f);
-	shapeTransformation(zScale,3.30f);
+	shapeTransformation(yScale, BB_SCALE);
+	shapeTransformation(xScale, BB_SCALE);
+	shapeTransformation(zScale, BB_SCALE);
+
+	/*my code:*/
+	std::list<glm::vec4> points;
+
+	points.push_back(glm::vec4(1, 0, 0, 1));
+	points.push_back(glm::vec4(-1, 0, 0, 1));
+	points.push_back(glm::vec4(0, 1, 0, 1));
+	points.push_back(glm::vec4(0, -1, 0, 1));
+	points.push_back(glm::vec4(0, 0, 1, 1));
+	points.push_back(glm::vec4(0, 0, -1, 1));
+
+	Kdtree kd;
+	kd.makeTree(points);
+	//kd.printTree(kd.getRoot());
+	std::cout << std::endl;
+	//std::cout << kd.getRoot()->data.x << " " << kd.getRoot()->data.y << " " << kd.getRoot()->data.z << " " << std::endl;
+	std::cout << kd.getRoot()->left->data.x << " " << kd.getRoot()->left->data.y << " " << kd.getRoot()->left->data.z << " " << std::endl;
+
+	addShapeCopy(3, -1, LINE_LOOP); //5 Cube belong to 2
+	pickedShape = 5;
+	shapeTransformation(xGlobalTranslate, -2);
+	//shapeTransformation(xGlobalTranslate, kd.getRoot()->left->data.x);
+	shapeTransformation(zScale, BB_SCALE);
+	shapeTransformation(yScale, BB_SCALE);
+	shapeTransformation(xScale, BB_SCALE / 2);
+
+	
+	addShapeCopy(3, -1, LINE_LOOP); //6 Cube belong to 2
+	pickedShape = 6;
+	shapeTransformation(xGlobalTranslate, 2);
+	//shapeTransformation(xGlobalTranslate, kd.getRoot()->right->data.x*2);
+	shapeTransformation(zScale, BB_SCALE);
+	shapeTransformation(yScale, BB_SCALE);
+	shapeTransformation(xScale, BB_SCALE / 2);
+	
 
 	pickedShape = -1;
 	//Activate();
 
-	/*
-	std::list<Node::vecType> point_list;
-	for (int i = 0; i < _numpts; i++)
-	{
-
-		point_list.push_back(shapes[1]->GetMesh());
-	}
-
-	Kdtree kd;
-	kd.makeTree(point_list);
-	kd.printTree(kd.getRoot());
-	*/
 }
 
 int Game::CreateCurveControlPoints(int counter, Bezier1D *curve)
