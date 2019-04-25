@@ -1,37 +1,21 @@
 #define GLEW_STATIC
 #include <GL\glew.h>
+#include <iostream>
 #include "MeshConstructor.h"
 #include "VertexBuffer.hpp"
 #include "IndexBuffer.hpp"
 #include "bezier2D.h"
 #include "obj_loader.h"
-#include <iostream>
-
 
 MeshConstructor::MeshConstructor(const int type)
 {
-	IndexedModel model;
-	std::vector<glm::vec3>* positions;
-	std::list<glm::vec4> points;
-	Kdtree kd;
-
 	switch (type)
 	{
 	case Axis:	
 		InitLine(AxisGenerator());
 		break;
 	case Cube:
-		model = CubeTriangles();
-		InitMesh(model);
-		positions = model.GetPositions();
-		//std::copy(positions->begin(), positions->end(), std::back_inserter(points));
-		//points.assign(positions->begin(), positions->end());
-		for (int i = 0; i < positions->size(); i++)
-			points.push_back(glm::vec4(positions->at(i),1));
-		kd.makeTree(points);
-		kd.printTree(kd.getRoot());
-		std::cout << kd.getRoot()->data.x << " " << kd.getRoot()->data.y << " " << kd.getRoot()->data.z << " " << std::endl;
-
+		InitMesh(CubeTriangles());
 		break;
 	case Octahedron:
 		InitMesh(OctahedronGenerator());
@@ -42,7 +26,6 @@ MeshConstructor::MeshConstructor(const int type)
 	default:
 		break;
 	}
-	
 }
 
 MeshConstructor::MeshConstructor(const std::string& fileName)
@@ -104,6 +87,7 @@ void MeshConstructor::InitLine(IndexedModel &model){
 
 void MeshConstructor::InitMesh(IndexedModel &model){
 
+	CreateTree(model.positions);
 	int verticesNum = model.positions.size();
 	indicesNum = model.indices.size();
 	
@@ -159,4 +143,44 @@ void MeshConstructor::CopyMesh(const MeshConstructor &mesh){
 
 	is2D = true;
 	
+}
+
+void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
+{
+	std::list<glm::vec4> points;
+	for (int i = 0; i < positions.size(); i++)
+		points.push_back(glm::vec4(positions.at(i), 1));
+	kdtree.makeTree(points);
+
+	kdtree.printTree(kdtree.getRoot());
+	//std::cout << kdtree.getRoot()->data.x << " " << kdtree.getRoot()->data.y << " " << kdtree.getRoot()->data.z << " " << std::endl;
+
+	glm::vec3 sum = glm::vec3(0);
+	glm::vec3 max = glm::vec3(0);
+	for (std::list<glm::vec4>::iterator it = points.begin(); it != points.end(); it++)
+	{
+		//std::cout << "(*it): " << (*it).x << " " << (*it).y << " " << (*it).z << " " << std::endl;
+		sum.x += (*it).x;
+		sum.y += (*it).y;
+		sum.z += (*it).z;
+		if ((*it).x > max.x)
+			max.x = (*it).x;
+		if ((*it).y > max.y)
+			max.y = (*it).y;
+		if ((*it).z > max.z)
+			max.z = (*it).z;
+	}
+	glm::vec3 avg = (1.0f / positions.size()) * sum;
+	glm::vec3 size = max - avg; //TODO: size problem could be here
+	bvh.SetBoundingBox(avg, size);
+
+	//bvh.SetLeft(CreateBVH(root->left, (level++) % 3, root, points));
+	//bvh.SetRight(CreateBVH(root->right, (level++) % 3, root, points));
+
+	//TODO: need to create the boxes in "game" and hide them 
+}
+
+void MeshConstructor::CreateBVH(Node node, BoundingBox daddy, bool is_left, int level)
+{
+
 }

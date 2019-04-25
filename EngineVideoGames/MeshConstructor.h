@@ -5,14 +5,19 @@
 #include "Mesh.h"
 #include "bezier1D.h"
 #include "kdtree.h"
+#include "BVH.h"
 
 
 class MeshConstructor
 {
+private:
 	VertexArray vao;
 	IndexBuffer *ib;
+
 	//TO DO: add bounding box data base and build it in the constructor:
-	std::vector<BoundingBox> BBH;
+	Kdtree kdtree;
+	BVH bvh;
+	
 	std::vector<VertexBuffer*> vbs;
 	bool is2D;
 	int unsigned indicesNum;
@@ -32,6 +37,7 @@ public:
 		BezierLine,
 		BezierSurface,
 	};
+	enum Axis{X, Y, Z};
 	MeshConstructor(const int type);
 	MeshConstructor(Bezier1D *curve, bool isSurface, unsigned int resT, unsigned int resS);
 	MeshConstructor(const MeshConstructor &mesh);
@@ -43,5 +49,7 @@ public:
 	inline unsigned int GetIndicesNum() { return indicesNum; }
 	inline bool Is2D() { return is2D; }
 	void InitLine(IndexedModel &model);
-};
 
+	void CreateTree(std::vector<glm::vec3> positions);
+	void CreateBVH(Node node, BoundingBox daddy, bool is_left, int level);
+};

@@ -176,34 +176,17 @@ void Game::Init()
 	shapeTransformation(zScale, BB_SCALE);
 
 	/*my code:*/
-	std::list<glm::vec4> points;
-
-	points.push_back(glm::vec4(1, 0, 0, 1));
-	points.push_back(glm::vec4(-1, 0, 0, 1));
-	points.push_back(glm::vec4(0, 1, 0, 1));
-	points.push_back(glm::vec4(0, -1, 0, 1));
-	points.push_back(glm::vec4(0, 0, 1, 1));
-	points.push_back(glm::vec4(0, 0, -1, 1));
-
-	Kdtree kd;
-	kd.makeTree(points);
-	//kd.printTree(kd.getRoot());
-	std::cout << std::endl;
-	//std::cout << kd.getRoot()->data.x << " " << kd.getRoot()->data.y << " " << kd.getRoot()->data.z << " " << std::endl;
-	//std::cout << kd.getRoot()->right->data.x << " " << kd.getRoot()->right->data.y << " " << kd.getRoot()->right->data.z << " " << std::endl;
-
 	addShapeCopy(3, -1, LINE_LOOP); //5 Cube belong to 2
 	pickedShape = 5;
-	shapeTransformation(xGlobalTranslate, kd.getRoot()->left->data.x * (BB_SCALE / 2));
+	shapeTransformation(xGlobalTranslate, 2);
 	//shapeTransformation(xGlobalTranslate, kd.getRoot()->left->data.x);
 	shapeTransformation(zScale, BB_SCALE);
 	shapeTransformation(yScale, BB_SCALE);
 	shapeTransformation(xScale, BB_SCALE / 2);
-
 	
 	addShapeCopy(3, -1, LINE_LOOP); //6 Cube belong to 2
 	pickedShape = 6;
-	shapeTransformation(xGlobalTranslate, kd.getRoot()->right->data.x * (BB_SCALE / 2));
+	shapeTransformation(xGlobalTranslate, -2);
 	//shapeTransformation(xGlobalTranslate, kd.getRoot()->right->data.x*2);
 	shapeTransformation(zScale, BB_SCALE);
 	shapeTransformation(yScale, BB_SCALE);
