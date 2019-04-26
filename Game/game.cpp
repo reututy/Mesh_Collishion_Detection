@@ -22,7 +22,8 @@ static void printMat(const glm::mat4 mat)
 
 Game::Game():Scene()
 {
-	curve = 0;
+	curve = NULL;
+	curve_two = NULL;
 }
 
 Game::Game(glm::vec3 position, float angle, float hwRelation, float near, float far) : Scene(position, angle, hwRelation, near, far)
@@ -68,8 +69,10 @@ Game::Game(glm::vec3 position, float angle, float hwRelation, float near, float 
 
 Game::~Game(void)
 {
-	delete curve;
-	delete curve_two;
+	if(curve != NULL)
+		delete curve;
+	if (curve_two != NULL)
+		delete curve_two;
 }
 
 void Game::addShape(int type, int parent, unsigned int mode)
@@ -93,6 +96,40 @@ void Game::addShape(int type, int parent, unsigned int mode)
 			else
 				shapes.push_back(new Shape(curve_two, 30, 30, true, mode));
 		}
+	}
+}
+
+void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
+{
+	addShapeCopy(2, -1, LINE_LOOP);
+	pickedShape = shapes.size() - 1;
+	shapes[pickedShape]->Hide();
+
+	std::cout << "shapes.size(): " << shapes.size() << std::endl;
+	//std::cout << "GetSize(): " << bvh->GetBox()->GetSize().x << " " << bvh->GetBox()->GetSize().y << " " << bvh->GetBox()->GetSize().z << " " << std::endl;
+
+	shapeTransformation(xScale, bvh->GetBox()->GetSize().x);
+	shapeTransformation(yScale, bvh->GetBox()->GetSize().y);
+	shapeTransformation(zScale, bvh->GetBox()->GetSize().z);
+
+	shapeTransformation(xGlobalTranslate, bvh->GetBox()->GetCenter().x); 
+	shapeTransformation(yGlobalTranslate, bvh->GetBox()->GetCenter().y);
+	shapeTransformation(zGlobalTranslate, bvh->GetBox()->GetCenter().z);
+
+	//chainParents[pickedShape] = parent;
+
+	//if(shapes[pickedShape]->GetMesh()->GetBVH())
+	if (level == 4)
+	{
+		shapes[pickedShape]->Unhide();
+	}
+	if (bvh->GetLeft() != nullptr)
+	{
+		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
+	}
+	if (bvh->GetRight() != nullptr)
+	{
+		CreateBoundingBoxes(bvh->GetRight(), parent, level + 1);
 	}
 }
 
@@ -145,9 +182,9 @@ void Game::Init()
 
 	addShape(Axis,-1,LINES); //0 Axis
 	addShape(Octahedron,-1,TRIANGLES); //1 Octahedron
-	addShapeCopy(1,-1,TRIANGLES); //2 Octahedron
-	addShape(Cube,1,LINE_LOOP);  //3 Cube belong to 1
-	addShapeCopy(3,2,LINE_LOOP); //4 Cube belong to 2
+	//addShapeCopy(1,-1,TRIANGLES); //2 Octahedron
+	addShape(Cube,1,LINE_LOOP);  //3 Cube belong to 1 --- 2
+	//addShapeCopy(3,2,LINE_LOOP); //4 Cube belong to 2
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0,0,-20),0);
@@ -160,22 +197,36 @@ void Game::Init()
 
 	ReadPixel();
 
-	pickedShape = 2;
-	shapeTransformation(zLocalRotate, 45);
-	shapeTransformation(xGlobalTranslate, 10);
+	//pickedShape = 2;
+	//shapeTransformation(zLocalRotate, 45);
+	//shapeTransformation(xGlobalTranslate, 10);
 
+	//Scale the first Octahedron
 	pickedShape = 1;
 	//shapeTransformation(xGlobalTranslate, -10);
+	//shapeTransformation(yScale, BB_SCALE);
+	//shapeTransformation(xScale, BB_SCALE);
+	//shapeTransformation(zScale, BB_SCALE);
+
+	//Scale the first box of the Octahedron
+	pickedShape = 2;
 	shapeTransformation(yScale, BB_SCALE);
 	shapeTransformation(xScale, BB_SCALE);
 	shapeTransformation(zScale, BB_SCALE);
 
-	pickedShape = 3;
-	shapeTransformation(yScale, BB_SCALE);
-	shapeTransformation(xScale, BB_SCALE);
-	shapeTransformation(zScale, BB_SCALE);
-
+	
 	/*my code:*/
+	shapes[2]->Hide();
+	for (int i = 0; i < shapes.size(); i++)
+	{
+		if (shapes[i]->GetMode() == TRIANGLES)
+		{
+			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
+		}
+	}
+	//shapes[10]->Unhide();
+	
+	/*
 	addShapeCopy(3, -1, LINE_LOOP); //5 Cube belong to 2
 	pickedShape = 5;
 	shapeTransformation(xGlobalTranslate, 2);
@@ -191,7 +242,7 @@ void Game::Init()
 	shapeTransformation(zScale, BB_SCALE);
 	shapeTransformation(yScale, BB_SCALE);
 	shapeTransformation(xScale, BB_SCALE / 2);
-	
+	*/
 
 	pickedShape = -1;
 	//Activate();

@@ -19,6 +19,7 @@ public:
 	Game(void);
 	Game(glm::vec3 position, float angle, float hwRelation, float near, float far);
 	~Game(void);
+	void CreateBoundingBoxes(BVH* bvh, int parent, int level);
 	void Init();
 	int CreateCurveControlPoints(int counter, Bezier1D *curve);
 	void addShape(int type, int parent, unsigned int mode);

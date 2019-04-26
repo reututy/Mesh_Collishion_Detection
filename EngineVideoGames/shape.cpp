@@ -69,6 +69,11 @@ MeshConstructor* Shape::GetMesh()
 	return mesh;
 }
 
+unsigned int Shape::GetMode()
+{
+	return mode;
+}
+
 Shape::~Shape(void)
 {
 	if(!isCopy)

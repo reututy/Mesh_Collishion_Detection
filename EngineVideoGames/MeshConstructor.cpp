@@ -151,15 +151,12 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 	for (int i = 0; i < positions.size(); i++)
 		points.push_back(glm::vec4(positions.at(i), 1));
 	kdtree.makeTree(points);
-
 	kdtree.printTree(kdtree.getRoot());
-	//std::cout << kdtree.getRoot()->data.x << " " << kdtree.getRoot()->data.y << " " << kdtree.getRoot()->data.z << " " << std::endl;
 
 	glm::vec3 sum = glm::vec3(0);
 	glm::vec3 max = glm::vec3(0);
 	for (std::list<glm::vec4>::iterator it = points.begin(); it != points.end(); it++)
 	{
-		//std::cout << "(*it): " << (*it).x << " " << (*it).y << " " << (*it).z << " " << std::endl;
 		sum.x += (*it).x;
 		sum.y += (*it).y;
 		sum.z += (*it).z;
@@ -171,16 +168,53 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 			max.z = (*it).z;
 	}
 	glm::vec3 avg = (1.0f / positions.size()) * sum;
-	glm::vec3 size = max - avg; //TODO: size problem could be here
+	glm::vec3 size = glm::abs(max - avg);
+
+	//std::cout << "size: " << size.x << " " << size.y << " " << size.z << " " << std::endl;
 	bvh.SetBoundingBox(avg, size);
 
-	//bvh.SetLeft(CreateBVH(root->left, (level++) % 3, root, points));
-	//bvh.SetRight(CreateBVH(root->right, (level++) % 3, root, points));
-
-	//TODO: need to create the boxes in "game" and hide them 
+	bvh.SetLeft(CreateBVH(*kdtree.getRoot(), *bvh.GetBox(), true, 0));
+	bvh.SetRight(CreateBVH(*kdtree.getRoot(), *bvh.GetBox(), false, 0));
 }
 
-void MeshConstructor::CreateBVH(Node node, BoundingBox daddy, bool is_left, int level)
+BVH* MeshConstructor::CreateBVH(Node curr_node, BoundingBox parent, bool is_left, int level)
 {
+	int axis = level % 3;
+	glm::vec3 center = parent.GetCenter();
+	glm::vec3 size = parent.GetSize();
+	BVH* bvh = new BVH();
 
+	std::cout << "curr_node.data[axis]: " << curr_node.data[axis] << " in axis: " << axis << std::endl;
+
+	if (is_left)
+	{
+		//center[axis] = ((parent.GetCenter()[axis] + parent.GetSize()[axis])) / 2.0f;
+		center[axis] = parent.GetCenter()[axis] - parent.GetSize()[axis];
+		//size[axis] = glm::abs((parent.GetCenter()[axis] + parent.GetSize()[axis]) - center[axis]);
+		size[axis] = glm::abs((parent.GetCenter()[axis] - parent.GetSize()[axis])) / 2.0f;
+	}
+	else
+	{
+		//center[axis] = ((parent.GetCenter()[axis] - parent.GetSize()[axis])) / 2.0f;
+		center[axis] = parent.GetCenter()[axis] + parent.GetSize()[axis];
+		//size[axis] = glm::abs((parent.GetCenter()[axis] - parent.GetSize()[axis]) - center[axis]);
+		size[axis] = glm::abs((parent.GetCenter()[axis] + parent.GetSize()[axis])) / 2.0f;
+	}
+
+	bvh->SetBoundingBox(center, size);
+
+	if (curr_node.left != nullptr)
+	{
+		bvh->SetLeft(CreateBVH(*(curr_node.left), *bvh->GetBox(), true, level + 1));
+	}
+	if (curr_node.right != nullptr)
+	{
+		bvh->SetRight(CreateBVH(*(curr_node.right), *bvh->GetBox(), false, level + 1));
+	}
+	return bvh;
+}
+
+BVH* MeshConstructor::GetBVH()
+{
+	return &bvh;
 }

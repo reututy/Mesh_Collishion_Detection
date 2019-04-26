@@ -18,6 +18,7 @@ public:
 	void SetLeft(BVH* bvh);
 	void SetRight(BVH* bvh);
 	
+	BoundingBox* GetBox();
 	BVH* GetLeft();
 	BVH* GetRight();
 };

@@ -270,6 +270,15 @@ BoundingBox::BoundingBox()
 	zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
 }
 
+BoundingBox::BoundingBox(glm::vec3 center, glm::vec3 size)
+{
+	this->center = center;
+	this->size = size;
+	this->xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		
+	this->yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		
+	this->zInit = glm::vec3(0, 0, 1);	   // z axis of the box. default value (0,0,1)
+}
+
 BoundingBox::~BoundingBox() {}
 
 void BoundingBox::SetBoundingBox(glm::vec3 center, glm::vec3 size)
@@ -284,5 +293,15 @@ void BoundingBox::SetBoundingBox(glm::vec3 center, glm::vec3 size)
 void BoundingBox::checkCollision()
 {
 
+}
+
+glm::vec3 BoundingBox::GetCenter()
+{
+	return center;
+}
+
+glm::vec3 BoundingBox::GetSize()
+{
+	return size;
 }
 

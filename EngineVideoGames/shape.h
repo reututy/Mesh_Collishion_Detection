@@ -42,6 +42,8 @@ public:
 
 	MeshConstructor* GetMesh();
 
+	unsigned int GetMode();
+
 	virtual ~Shape(void);
 };
 

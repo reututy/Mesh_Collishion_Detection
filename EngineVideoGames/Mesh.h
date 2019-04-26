@@ -89,9 +89,12 @@ private:
 
 public:
 	BoundingBox();
+	BoundingBox(glm::vec3 center, glm::vec3 size);
 	~BoundingBox();
 	void SetBoundingBox(glm::vec3 center, glm::vec3 size);
 	void checkCollision();
+	glm::vec3 GetCenter();
+	glm::vec3 GetSize();
 };
 
 IndexedModel CubeTriangles();
