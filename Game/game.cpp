@@ -99,7 +99,7 @@ void Game::addShape(int type, int parent, unsigned int mode)
 	}
 }
 
-void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
+void Game::CreateBoundingBoxes(BVH* bvh, int level)
 {
 	addShapeCopy(2, -1, LINE_LOOP);
 	pickedShape = shapes.size() - 1;
@@ -120,9 +120,9 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	if (level < 6)
 		shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
-		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
+		CreateBoundingBoxes(bvh->GetLeft(), level + 1);
 	if (bvh->GetRight() != nullptr)
-		CreateBoundingBoxes(bvh->GetRight(), parent, level + 1);
+		CreateBoundingBoxes(bvh->GetRight(), level + 1);
 }
 
 void Game::Init()
@@ -212,7 +212,7 @@ void Game::Init()
 	{
 		if (shapes[i]->GetMode() == TRIANGLES)
 		{
-			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
+			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), 0);
 		}
 	}
 	
