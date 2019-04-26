@@ -103,10 +103,8 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 {
 	addShapeCopy(2, -1, LINE_LOOP);
 	pickedShape = shapes.size() - 1;
+	//TODO: need to hide all the shapes
 	shapes[pickedShape]->Hide();
-
-	std::cout << "shapes.size(): " << shapes.size() << std::endl;
-	//std::cout << "GetSize(): " << bvh->GetBox()->GetSize().x << " " << bvh->GetBox()->GetSize().y << " " << bvh->GetBox()->GetSize().z << " " << std::endl;
 
 	shapeTransformation(xScale, bvh->GetBox()->GetSize().x);
 	shapeTransformation(yScale, bvh->GetBox()->GetSize().y);
@@ -118,19 +116,13 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 
 	//chainParents[pickedShape] = parent;
 
-	//if(shapes[pickedShape]->GetMesh()->GetBVH())
+	//TODO: Need to fix level 4,5
 	if (level == 4)
-	{
 		shapes[pickedShape]->Unhide();
-	}
 	if (bvh->GetLeft() != nullptr)
-	{
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
-	}
 	if (bvh->GetRight() != nullptr)
-	{
 		CreateBoundingBoxes(bvh->GetRight(), parent, level + 1);
-	}
 }
 
 void Game::Init()

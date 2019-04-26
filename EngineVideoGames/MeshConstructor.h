@@ -51,7 +51,7 @@ public:
 	void InitLine(IndexedModel &model);
 
 	void CreateTree(std::vector<glm::vec3> positions);
-	BVH* CreateBVH(Node curr_node, BoundingBox parent, bool is_left, int level);
+	BVH* CreateBVH(BoundingBox parent, Node curr_node, int level, bool is_left);
 
 	BVH* GetBVH();
 };

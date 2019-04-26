@@ -170,47 +170,31 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 	glm::vec3 avg = (1.0f / positions.size()) * sum;
 	glm::vec3 size = glm::abs(max - avg);
 
-	//std::cout << "size: " << size.x << " " << size.y << " " << size.z << " " << std::endl;
 	bvh.SetBoundingBox(avg, size);
 
-	bvh.SetLeft(CreateBVH(*kdtree.getRoot(), *bvh.GetBox(), true, 0));
-	bvh.SetRight(CreateBVH(*kdtree.getRoot(), *bvh.GetBox(), false, 0));
+	bvh.SetLeft(CreateBVH(*bvh.GetBox(), *kdtree.getRoot(), 0, true));
+	bvh.SetRight(CreateBVH(*bvh.GetBox(), *kdtree.getRoot(), 0, false));
 }
 
-BVH* MeshConstructor::CreateBVH(Node curr_node, BoundingBox parent, bool is_left, int level)
+BVH* MeshConstructor::CreateBVH(BoundingBox parent, Node curr_node, int level, bool is_left)
 {
-	int axis = level % 3;
+	BVH* bvh = new BVH();
 	glm::vec3 center = parent.GetCenter();
 	glm::vec3 size = parent.GetSize();
-	BVH* bvh = new BVH();
+	int curr_cut = level % 3;
+	int sign = is_left ? -1 : 1;
+	
+	//TODO: Need to fix level 4,5
 
-	std::cout << "curr_node.data[axis]: " << curr_node.data[axis] << " in axis: " << axis << std::endl;
-
-	if (is_left)
-	{
-		//center[axis] = ((parent.GetCenter()[axis] + parent.GetSize()[axis])) / 2.0f;
-		center[axis] = parent.GetCenter()[axis] - parent.GetSize()[axis];
-		//size[axis] = glm::abs((parent.GetCenter()[axis] + parent.GetSize()[axis]) - center[axis]);
-		size[axis] = glm::abs((parent.GetCenter()[axis] - parent.GetSize()[axis])) / 2.0f;
-	}
-	else
-	{
-		//center[axis] = ((parent.GetCenter()[axis] - parent.GetSize()[axis])) / 2.0f;
-		center[axis] = parent.GetCenter()[axis] + parent.GetSize()[axis];
-		//size[axis] = glm::abs((parent.GetCenter()[axis] - parent.GetSize()[axis]) - center[axis]);
-		size[axis] = glm::abs((parent.GetCenter()[axis] + parent.GetSize()[axis])) / 2.0f;
-	}
+	center[curr_cut] = parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut];
+	size[curr_cut] = glm::abs(parent.GetSize()[curr_cut]) / 2.0f;
 
 	bvh->SetBoundingBox(center, size);
 
 	if (curr_node.left != nullptr)
-	{
-		bvh->SetLeft(CreateBVH(*(curr_node.left), *bvh->GetBox(), true, level + 1));
-	}
+		bvh->SetLeft(CreateBVH(*bvh->GetBox(), *(curr_node.left), level + 1, true));
 	if (curr_node.right != nullptr)
-	{
-		bvh->SetRight(CreateBVH(*(curr_node.right), *bvh->GetBox(), false, level + 1));
-	}
+		bvh->SetRight(CreateBVH(*bvh->GetBox(), *(curr_node.right), level + 1, false));
 	return bvh;
 }
 
