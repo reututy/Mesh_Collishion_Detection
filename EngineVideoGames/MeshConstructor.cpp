@@ -184,7 +184,7 @@ BVH* MeshConstructor::CreateBVH(BoundingBox parent, Node curr_node, int level, b
 	int curr_cut = level % 3;
 	int sign = is_left ? -1 : 1;
 	
-	//TODO: Need to fix level 4,5
+	//TODO: Need to fix level 4,5 and scale size
 
 	center[curr_cut] = parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut];
 	size[curr_cut] = glm::abs(parent.GetSize()[curr_cut]) / 2.0f;

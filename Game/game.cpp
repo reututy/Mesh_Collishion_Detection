@@ -103,8 +103,6 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 {
 	addShapeCopy(2, -1, LINE_LOOP);
 	pickedShape = shapes.size() - 1;
-	//TODO: need to hide all the shapes
-	shapes[pickedShape]->Hide();
 
 	shapeTransformation(xScale, bvh->GetBox()->GetSize().x);
 	shapeTransformation(yScale, bvh->GetBox()->GetSize().y);
@@ -114,10 +112,12 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	shapeTransformation(yGlobalTranslate, bvh->GetBox()->GetCenter().y);
 	shapeTransformation(zGlobalTranslate, bvh->GetBox()->GetCenter().z);
 
+	//TODO: need to hide all the shapes
+	shapes[pickedShape]->Hide();
 	//chainParents[pickedShape] = parent;
 
 	//TODO: Need to fix level 4,5
-	if (level == 4)
+	if (level < 6)
 		shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
@@ -202,13 +202,12 @@ void Game::Init()
 
 	//Scale the first box of the Octahedron
 	pickedShape = 2;
-	shapeTransformation(yScale, BB_SCALE);
-	shapeTransformation(xScale, BB_SCALE);
-	shapeTransformation(zScale, BB_SCALE);
-
+	//shapeTransformation(yScale, BB_SCALE);
+	//shapeTransformation(xScale, BB_SCALE);
+	//shapeTransformation(zScale, BB_SCALE);
+	shapes[2]->Hide();
 	
 	/*my code:*/
-	shapes[2]->Hide();
 	for (int i = 0; i < shapes.size(); i++)
 	{
 		if (shapes[i]->GetMode() == TRIANGLES)
@@ -216,7 +215,6 @@ void Game::Init()
 			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
 		}
 	}
-	//shapes[10]->Unhide();
 	
 	/*
 	addShapeCopy(3, -1, LINE_LOOP); //5 Cube belong to 2
