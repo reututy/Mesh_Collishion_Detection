@@ -20,12 +20,12 @@ BVH::~BVH()
 	*/
 }
 
-void BVH::SetBoundingBox(glm::vec3 center, glm::vec3 size)
+void BVH::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
 {
 	if (box == nullptr)
-		box = new BoundingBox(center, size);
+		box = new BoundingBox(begin, center, size);
 	else 
-		box->SetBoundingBox(center, size);
+		box->SetBoundingBox(begin, center, size);
 }
 
 void BVH::SetLeft(BVH* bvh)

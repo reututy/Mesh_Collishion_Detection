@@ -170,7 +170,7 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 	glm::vec3 avg = (1.0f / positions.size()) * sum;
 	glm::vec3 size = glm::abs(max - avg);
 
-	bvh.SetBoundingBox(avg, size);
+	bvh.SetBoundingBox(glm::vec3(0, 0, 0), avg, size);
 
 	bvh.SetLeft(CreateBVH(*bvh.GetBox(), *kdtree.getRoot(), 0, true));
 	bvh.SetRight(CreateBVH(*bvh.GetBox(), *kdtree.getRoot(), 0, false));
@@ -179,6 +179,7 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 BVH* MeshConstructor::CreateBVH(BoundingBox parent, Node curr_node, int level, bool is_left)
 {
 	BVH* bvh = new BVH();
+	glm::vec3 begin = parent.GetBegin();
 	glm::vec3 center = parent.GetCenter();
 	glm::vec3 size = parent.GetSize();
 	int curr_cut = level % 3;
@@ -186,10 +187,11 @@ BVH* MeshConstructor::CreateBVH(BoundingBox parent, Node curr_node, int level, b
 	
 	//TODO: Need to fix level 4,5 and scale size
 
-	center[curr_cut] = parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut];
+	begin[curr_cut] = parent.GetBegin()[curr_cut] + sign * parent.GetSize()[curr_cut];
+	center[curr_cut] = ((parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut]) + curr_node.data[curr_cut]) / 2.0f;;
 	size[curr_cut] = glm::abs(parent.GetSize()[curr_cut]) / 2.0f;
 
-	bvh->SetBoundingBox(center, size);
+	bvh->SetBoundingBox(begin, center, size);
 
 	if (curr_node.left != nullptr)
 		bvh->SetLeft(CreateBVH(*bvh->GetBox(), *(curr_node.left), level + 1, true));

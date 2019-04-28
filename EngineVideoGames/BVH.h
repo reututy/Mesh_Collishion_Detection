@@ -14,7 +14,7 @@ public:
 	BVH();
 	~BVH();
 
-	void SetBoundingBox(glm::vec3 center, glm::vec3 size);
+	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	void SetLeft(BVH* bvh);
 	void SetRight(BVH* bvh);
 	

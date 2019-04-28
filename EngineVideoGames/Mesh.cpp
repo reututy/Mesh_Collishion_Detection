@@ -72,8 +72,6 @@ IndexedModel CubeTriangles()
 		Vertex(glm::vec3(1, 1, -1), glm::vec2(0, 1), glm::vec3(1, 0, 0),BLUE)
 	};
 
-
-
 	unsigned int indices[] =	{0, 1, 2,
 							  0, 2, 3,
 
@@ -122,7 +120,6 @@ IndexedModel AxisGenerator()
 		LineVertex(glm::vec3(0,0,-1),glm::vec3(0,0,1)),
 	};
 
-
 	 unsigned int axisIndices[] = 
 	{
 		0,1,
@@ -164,8 +161,6 @@ IndexedModel TethrahedronGenerator()
 		Vertex(glm::vec3(1, -1, -1), glm::vec2(1, 0), glm::vec3(-1, -1, -1),glm::vec3(1, 1, 0)),
 
 	};
-
-
 
 	unsigned int indices[] =	{0, 1, 2,
 							     3, 4, 5,
@@ -250,12 +245,6 @@ IndexedModel OctahedronGenerator()
 	for(unsigned int i = 0; i < 24; i++)
         model.indices.push_back(indices[i]);
 
-	/*
-	for (int i = 0; i < 24; i++)
-		std::cout << model.positions.at(i).x << " " << model.positions.at(i).y << " " << model.positions.at(i).z << " " << std::endl;
-	std::cout <<  std::endl;
-	*/
-
 	return model;
 }
 
@@ -263,6 +252,7 @@ IndexedModel OctahedronGenerator()
 
 BoundingBox::BoundingBox()
 {
+	begin = glm::vec3(0, 0, 0);     // begin coordinates
 	center = glm::vec3(0, 0, 0);     // center coordinates
 	size = glm::vec3(2, 2, 2);       // distance between the center of the box to its side in each dimension 
 	xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
@@ -270,8 +260,9 @@ BoundingBox::BoundingBox()
 	zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
 }
 
-BoundingBox::BoundingBox(glm::vec3 center, glm::vec3 size)
+BoundingBox::BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
 {
+	this->begin = begin;
 	this->center = center;
 	this->size = size;
 	this->xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		
@@ -281,8 +272,9 @@ BoundingBox::BoundingBox(glm::vec3 center, glm::vec3 size)
 
 BoundingBox::~BoundingBox() {}
 
-void BoundingBox::SetBoundingBox(glm::vec3 center, glm::vec3 size)
+void BoundingBox::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
 {
+	this->begin = begin;
 	this->center = center;
 	this->size = size;
 	xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
@@ -290,9 +282,76 @@ void BoundingBox::SetBoundingBox(glm::vec3 center, glm::vec3 size)
 	zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
 }
 
+/*
+PA = coordinate position of the center of A
+Ax = unit vector representing the x - axis of A
+Ay = unit vector representing the y - axis of A
+Az = unit vector representing the z - axis of A
+WA = half width of A(corresponds with the local x - axis of A)
+HA = half height ofA(corresponds with the local y - axis of A)
+DA = half depth ofA(corresponds with the local z - axis of A)
+
+PB = coordinate position of the center of B
+Bx = unit vector representing the x - axis of B
+By = unit vector representing the y - axis of B
+Bz = unit vector representing the z - axis of B
+WB = half width ofB(corresponds with the local x - axis of B)
+HB = half height ofB(corresponds with the local y - axis of B)
+DB = half depth ofB(corresponds with the local z - axis of B)
+*/
 void BoundingBox::checkCollision()
 {
+	float left_side, right_side;
+	
+	
+	//Check case 1:
 
+
+	//Check case 2:
+
+
+	//Check case 3:
+
+
+	//Check case 4:
+
+
+	//Check case 5:
+
+
+	//Check case 6:
+
+
+	//Check case 7:
+
+
+	//Check case 8:
+
+
+	//Check case 9:
+
+
+	//Check case 10:
+
+
+	//Check case 11:
+
+
+	//Check case 12:
+
+
+	//Check case 13:
+
+
+	//Check case 14:
+
+
+	//Check case 15:
+}
+
+glm::vec3 BoundingBox::GetBegin()
+{
+	return begin;
 }
 
 glm::vec3 BoundingBox::GetCenter()
