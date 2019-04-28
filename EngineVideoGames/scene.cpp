@@ -514,3 +514,24 @@ void Scene::SetPickedShape(int value)
 {
 	pickedShape = value;
 }
+
+void Scene::CheckCollisionDetection()
+{
+	//TODO: Checks collision for each pair of shapes in scene and if collide, 
+	//draw the appropriate bounding boxes.
+	int box_to_draw_index;
+	for (Shape* shape1 : shapes)
+	{
+		if (shape1->GetMode() == TRIANGLES)
+		{
+			for (Shape* shape2 : shapes)
+			{
+				if (shape2->GetMode() == TRIANGLES)
+				{
+					box_to_draw_index = shape1->CollisionDetection(shape2);
+					shapes[box_to_draw_index]->Unhide();
+				}
+			}
+		}
+	}
+}

@@ -76,6 +76,8 @@ public:
 	void OpositeDirectionRot(glm::vec3 vec,float angle);
 	int GetPickedShape();
 	void SetPickedShape(int value);
+	void CheckCollisionDetection();
+
 
 private:	
 

@@ -93,7 +93,7 @@ public:
 	BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	~BoundingBox();
 	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
-	void checkCollision();
+	bool CheckCollision(BoundingBox* other);
 	glm::vec3 GetBegin();
 	glm::vec3 GetCenter();
 	glm::vec3 GetSize();

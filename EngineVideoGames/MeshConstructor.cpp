@@ -204,3 +204,10 @@ BVH* MeshConstructor::GetBVH()
 {
 	return &bvh;
 }
+
+BoundingBox* MeshConstructor::CollisionDetection(BoundingBox* other /*MeshConstructor and Mat4 ?*/)
+{
+	//TODO: Check collision between two bvh using BB CheckCollision
+	BoundingBox box;
+	return &box;
+}

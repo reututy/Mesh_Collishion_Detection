@@ -27,7 +27,6 @@ private:
 	void CopyLine(const MeshConstructor &mesh);
 
 public:
-	//TO DO: add collision detection function which get other MeshConstructor and Mat4 of related transformasions. The function may return a pointer to the relevant Bounding Box when collide
 	enum SimpleShapes
 	{
 		Axis,
@@ -52,6 +51,8 @@ public:
 
 	void CreateTree(std::vector<glm::vec3> positions);
 	BVH* CreateBVH(BoundingBox parent, Node curr_node, int level, bool is_left);
+	//TO DO: add collision detection function which get other MeshConstructor and Mat4 of related transformasions. The function may return a pointer to the relevant Bounding Box when collide:
+	BoundingBox* CollisionDetection(BoundingBox* other /*MeshConstructor and Mat4 ?*/);
 
 	BVH* GetBVH();
 };

@@ -45,5 +45,7 @@ public:
 	unsigned int GetMode();
 
 	virtual ~Shape(void);
+
+	int CollisionDetection(Shape* other);
 };
 

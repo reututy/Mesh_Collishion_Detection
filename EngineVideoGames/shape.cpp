@@ -85,3 +85,8 @@ Shape::~Shape(void)
 	}
 }
 
+int Shape::CollisionDetection(Shape* other)
+{
+	//TODO: Call CollisionDetection() of MeshConstructor with the orientation of the shape
+	return CollisionDetection(other /*MeshConstructor and Mat4 ?*/);
+}

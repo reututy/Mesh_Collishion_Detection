@@ -299,7 +299,7 @@ WB = half width ofB(corresponds with the local x - axis of B)
 HB = half height ofB(corresponds with the local y - axis of B)
 DB = half depth ofB(corresponds with the local z - axis of B)
 */
-void BoundingBox::checkCollision()
+bool BoundingBox::CheckCollision(BoundingBox* other)
 {
 	float left_side, right_side;
 	
@@ -347,6 +347,8 @@ void BoundingBox::checkCollision()
 
 
 	//Check case 15:
+
+	return true;
 }
 
 glm::vec3 BoundingBox::GetBegin()

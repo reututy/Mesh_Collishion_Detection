@@ -101,7 +101,7 @@ void Game::addShape(int type, int parent, unsigned int mode)
 
 void Game::CreateBoundingBoxes(BVH* bvh, int level)
 {
-	addShapeCopy(2, -1, LINE_LOOP);
+	addShapeCopy(1, -1, LINE_LOOP);
 	pickedShape = shapes.size() - 1;
 
 	shapeTransformation(xScale, bvh->GetBox()->GetSize().x);
@@ -114,7 +114,7 @@ void Game::CreateBoundingBoxes(BVH* bvh, int level)
 
 	//TODO: need to hide all the shapes
 	shapes[pickedShape]->Hide();
-	//chainParents[pickedShape] = parent;
+	//chainParents[pickedShape] = bvh->GetBox()->;
 
 	//TODO: Need to fix level 4,5
 	if (level == 2)
@@ -173,10 +173,9 @@ void Game::Init()
 	*/
 
 	addShape(Axis,-1,LINES); //0 Axis
-	addShape(Octahedron,-1,TRIANGLES); //1 Octahedron
-	//addShapeCopy(1,-1,TRIANGLES); //2 Octahedron
-	addShape(Cube,1,LINE_LOOP);  //3 Cube belong to 1 --- 2
-	//addShapeCopy(3,2,LINE_LOOP); //4 Cube belong to 2
+	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
+	addShape(Octahedron,-1,TRIANGLES); //2 left Octahedron
+	addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0,0,-20),0);
@@ -187,25 +186,21 @@ void Game::Init()
 	shapeTransformation(xScale, 10);
 	shapeTransformation(zScale, 10);
 
-	ReadPixel();
+	//ReadPixel();
 
-	//pickedShape = 2;
-	//shapeTransformation(zLocalRotate, 45);
-	//shapeTransformation(xGlobalTranslate, 10);
-
-	//Scale the first Octahedron
-	pickedShape = 1;
-	//shapeTransformation(xGlobalTranslate, -10);
-	//shapeTransformation(yScale, BB_SCALE);
-	//shapeTransformation(xScale, BB_SCALE);
-	//shapeTransformation(zScale, BB_SCALE);
-
-	//Scale the first box of the Octahedron
+	//Scale and move the first (left) Octahedron
 	pickedShape = 2;
+	shapeTransformation(xGlobalTranslate, -10);
 	//shapeTransformation(yScale, BB_SCALE);
 	//shapeTransformation(xScale, BB_SCALE);
 	//shapeTransformation(zScale, BB_SCALE);
-	shapes[2]->Hide();
+
+	//Scale and move the second (right) Octahedron
+	pickedShape = 3;
+	shapeTransformation(zLocalRotate, 30);
+	shapeTransformation(xGlobalTranslate, 10);
+
+	shapes[1]->Hide();
 	
 	/*my code:*/
 	for (int i = 0; i < shapes.size(); i++)
@@ -273,7 +268,6 @@ int Game::CreateCurveControlPoints(int counter, Bezier1D *curve)
 
 void Game::Update(const glm::mat4 &MVP, const glm::mat4 &Normal, Shader *s)
 {
-	int prev_shape = pickedShape;
 	if (!once) 
 		MoveControlCubes();
 
@@ -285,6 +279,7 @@ void Game::Update(const glm::mat4 &MVP, const glm::mat4 &Normal, Shader *s)
 	s->SetUniformMat4f("Normal", Normal);
 	s->SetUniform4f("lightDirection", 0.0f, 0.0f, -1.0f, 1.0f);
 	s->SetUniform4f("lightColor", r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
+	//CheckCollisionDetection();
 }
 
 void Game::WhenRotate()
