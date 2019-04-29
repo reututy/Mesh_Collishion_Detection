@@ -85,8 +85,22 @@ Shape::~Shape(void)
 	}
 }
 
+// Returns -1 if there is no collision 
 int Shape::CollisionDetection(Shape* other)
 {
-	//TODO: Call CollisionDetection() of MeshConstructor with the orientation of the shape
-	return CollisionDetection(other /*MeshConstructor and Mat4 ?*/);
+	//TODO: Check the orientation
+	BoundingBox* box_that_collides = mesh->CollisionDetection(other->mesh->GetBVH(), makeTrans());
+	if (box_that_collides != nullptr)
+		return box_that_collides->GetNumOfShape();
+	return -1;
+}
+
+void Shape::SetNumOfShape(int value)
+{
+	num_of_shape = value;
+}
+
+int Shape::GetNumOfShape()
+{
+	return num_of_shape;
 }

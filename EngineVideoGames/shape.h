@@ -15,6 +15,7 @@ private:
 	bool isCopy;
 	unsigned int mode;
 	bool toRender;
+	int num_of_shape;
 
 public:
 
@@ -47,5 +48,10 @@ public:
 	virtual ~Shape(void);
 
 	int CollisionDetection(Shape* other);
+
+	void SetNumOfShape(int value);
+
+	int GetNumOfShape();
+
 };
 

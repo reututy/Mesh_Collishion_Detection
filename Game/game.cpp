@@ -99,10 +99,11 @@ void Game::addShape(int type, int parent, unsigned int mode)
 	}
 }
 
-void Game::CreateBoundingBoxes(BVH* bvh, int level)
+void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 {
 	addShapeCopy(1, -1, LINE_LOOP);
 	pickedShape = shapes.size() - 1;
+	bvh->GetBox()->SetNumOfShape(pickedShape);
 
 	shapeTransformation(xScale, bvh->GetBox()->GetSize().x);
 	shapeTransformation(yScale, bvh->GetBox()->GetSize().y);
@@ -114,15 +115,22 @@ void Game::CreateBoundingBoxes(BVH* bvh, int level)
 
 	//TODO: need to hide all the shapes
 	shapes[pickedShape]->Hide();
-	//chainParents[pickedShape] = bvh->GetBox()->;
+	chainParents[pickedShape] = parent;
 
 	//TODO: Need to fix level 4,5
-	if (level == 2)
+	if (level == 0)
 		shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
-		CreateBoundingBoxes(bvh->GetLeft(), level + 1);
+		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
 	if (bvh->GetRight() != nullptr)
-		CreateBoundingBoxes(bvh->GetRight(), level + 1);
+		CreateBoundingBoxes(bvh->GetRight(), parent, level + 1);
+}
+
+void Game::SetNumOfShape()
+{
+	pickedShape = shapes.size() - 1;
+	shapes[pickedShape]->SetNumOfShape(pickedShape);
+	pickedShape = -1;
 }
 
 void Game::Init()
@@ -173,9 +181,13 @@ void Game::Init()
 	*/
 
 	addShape(Axis,-1,LINES); //0 Axis
+	SetNumOfShape();
 	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
+	SetNumOfShape();
 	addShape(Octahedron,-1,TRIANGLES); //2 left Octahedron
+	SetNumOfShape();
 	addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
+	SetNumOfShape();
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0,0,-20),0);
@@ -207,7 +219,7 @@ void Game::Init()
 	{
 		if (shapes[i]->GetMode() == TRIANGLES)
 		{
-			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), 0);
+			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
 		}
 	}
 	
@@ -279,7 +291,7 @@ void Game::Update(const glm::mat4 &MVP, const glm::mat4 &Normal, Shader *s)
 	s->SetUniformMat4f("Normal", Normal);
 	s->SetUniform4f("lightDirection", 0.0f, 0.0f, -1.0f, 1.0f);
 	s->SetUniform4f("lightColor", r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
-	//CheckCollisionDetection();
+	CheckCollisionDetection();
 }
 
 void Game::WhenRotate()

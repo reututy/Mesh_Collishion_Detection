@@ -32,8 +32,6 @@ public:
 				return (void*)0;
 		}
 	}
-
-	std::vector<glm::vec3>* GetPositions();
 };
 
 struct Vertex
@@ -80,6 +78,7 @@ private:
 class BoundingBox
 {
 private:
+	int num_of_shape;
 	glm::vec3 begin;     // begin coordinates
 	glm::vec3 center;     // center coordinates
 	glm::vec3 size;       // distance between the center of the box to its side in each dimension 
@@ -92,8 +91,12 @@ public:
 	BoundingBox();
 	BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	~BoundingBox();
-	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	bool CheckCollision(BoundingBox* other);
+
+	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
+	void SetNumOfShape(int value);
+
+	int GetNumOfShape();
 	glm::vec3 GetBegin();
 	glm::vec3 GetCenter();
 	glm::vec3 GetSize();

@@ -188,7 +188,7 @@ BVH* MeshConstructor::CreateBVH(BoundingBox parent, Node curr_node, int level, b
 	//TODO: Need to fix level 4,5 and scale size
 
 	begin[curr_cut] = parent.GetBegin()[curr_cut] + sign * parent.GetSize()[curr_cut];
-	center[curr_cut] = ((parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut]) + curr_node.data[curr_cut]) / 2.0f;;
+	center[curr_cut] = ((parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut]) + curr_node.data[curr_cut]) / 2.0f;
 	size[curr_cut] = glm::abs(parent.GetSize()[curr_cut]) / 2.0f;
 
 	bvh->SetBoundingBox(begin, center, size);
@@ -205,9 +205,30 @@ BVH* MeshConstructor::GetBVH()
 	return &bvh;
 }
 
-BoundingBox* MeshConstructor::CollisionDetection(BoundingBox* other /*MeshConstructor and Mat4 ?*/)
+// Checks collision between two bvh using BB CheckCollision
+BoundingBox* MeshConstructor::CollisionDetection(BVH* other, glm::mat4 orientation /*MeshConstructor and Mat4 ?*/)
 {
-	//TODO: Check collision between two bvh using BB CheckCollision
-	BoundingBox box;
-	return &box;
+	std::queue<BVH*> self_queue;
+	BVH* self_curr = &this->bvh;
+	self_queue.push(self_curr);
+	while (!self_queue.empty()) 
+	{
+		self_curr = self_queue.front();
+		self_queue.pop();
+		if (self_curr->GetBox()->CheckCollision(other->GetBox())) 
+		{
+			if (self_curr->GetLeft() != nullptr && self_curr->GetRight() != nullptr) 
+			{
+				self_queue.push(self_curr->GetLeft());
+				self_queue.push(self_curr->GetRight());
+			}
+			else if (self_curr->GetLeft() != nullptr)
+				self_queue.push(self_curr->GetLeft());
+			else if (self_curr->GetRight() != nullptr)
+				self_queue.push(self_curr->GetRight());
+			else
+				return self_curr->GetBox();
+		}
+	}
+	return nullptr;
 }
