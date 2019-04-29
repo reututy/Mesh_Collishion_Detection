@@ -266,8 +266,9 @@ BoundingBox::BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
 
 BoundingBox::~BoundingBox() {}
 
-
 /*
+Let A (this) and B (other) be oriented bounding boxes (OBB):
+
 PA = coordinate position of the center of A
 Ax = unit vector representing the x - axis of A
 Ay = unit vector representing the y - axis of A
@@ -286,190 +287,85 @@ DB = half depth ofB(corresponds with the local z - axis of B)
 */
 bool BoundingBox::CheckCollision(BoundingBox* other)
 {
-	/*
-	float R0, R1, R;
-	glm::vec3 D = this->center - other->center;
-	glm::mat3x3 c = glm::mat3x3(
-		glm::vec3(glm::dot(this->xInit, other->xInit), glm::dot(this->xInit, other->yInit), glm::dot(this->xInit, other->zInit)),
-		glm::vec3(glm::dot(this->yInit, other->xInit), glm::dot(this->yInit, other->yInit), glm::dot(this->yInit, other->zInit)),
-		glm::vec3(glm::dot(this->zInit, other->xInit), glm::dot(this->zInit, other->yInit), glm::dot(this->zInit, other->zInit))
-		);
-
-	//test A0
-	R0 = this->size.x;
-	R1 = other->size.x*glm::abs(c[0][0]) +
-		other->size.y*glm::abs(c[0][1]) +
-		other->size.z*glm::abs(c[0][2]);
-	R = glm::abs(glm::dot(xInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A1
-	R0 = this->size.y;
-	R1 = other->size.x*glm::abs(c[1][0]) +
-		other->size.y*glm::abs(c[1][1]) +
-		other->size.z*glm::abs(c[1][2]);
-	R = glm::abs(glm::dot(yInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A2
-	R0 = this->size.z;
-	R1 = other->size.x*glm::abs(c[2][0]) +
-		other->size.y*glm::abs(c[2][1]) +
-		other->size.z*glm::abs(c[2][2]);
-	R = glm::abs(glm::dot(zInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test B0
-	R1 = other->size.x;
-	R0 = this->size.x*glm::abs(c[0][0]) +
-		this->size.y*glm::abs(c[1][0]) +
-		this->size.z*glm::abs(c[2][0]);
-	R = glm::abs(glm::dot(other->xInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test B1
-	R1 = other->size.y;
-	R0 = this->size.x*glm::abs(c[0][1]) +
-		this->size.y*glm::abs(c[1][1]) +
-		this->size.z*glm::abs(c[2][1]);
-	R = glm::abs(glm::dot(other->yInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test B1
-	R1 = other->size.z;
-	R0 = this->size.x*glm::abs(c[0][2]) +
-		this->size.y*glm::abs(c[1][2]) +
-		this->size.z*glm::abs(c[2][2]);
-	R = glm::abs(glm::dot(other->zInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A0xB0
-	R0 = this->size.y*glm::abs(c[2][0]) +
-		this->size.z*glm::abs(c[1][0]);
-	R1 = other->size.y*glm::abs(c[0][2]) +
-		other->size.z*glm::abs(c[0][1]);
-	R = glm::abs(c[1][0] * glm::dot(zInit, D) - c[2][0] * glm::dot(yInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A0xB1
-	R0 = this->size.y*glm::abs(c[2][1]) +
-		this->size.z*glm::abs(c[1][1]);
-	R1 = other->size.x*glm::abs(c[0][2]) +
-		other->size.z*glm::abs(c[0][0]);
-	R = glm::abs(c[1][1] * glm::dot(zInit, D) - c[2][1] * glm::dot(yInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A0xB2
-	R0 = this->size.y*glm::abs(c[2][2]) +
-		this->size.z*glm::abs(c[1][2]);
-	R1 = other->size.x*glm::abs(c[0][1]) +
-		other->size.y*glm::abs(c[0][0]);
-	R = glm::abs(c[1][2] * glm::dot(zInit, D) - c[2][2] * glm::dot(yInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A1xB0
-	R0 = this->size.x*glm::abs(c[2][0]) +
-		this->size.z*glm::abs(c[0][0]);
-	R1 = other->size.y*glm::abs(c[1][2]) +
-		other->size.z*glm::abs(c[1][1]);
-	R = glm::abs(c[2][0] * glm::dot(xInit, D) - c[0][0] * glm::dot(zInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A1xB1
-	R0 = this->size.x*glm::abs(c[2][1]) +
-		this->size.z*glm::abs(c[0][1]);
-	R1 = other->size.x*glm::abs(c[1][2]) +
-		other->size.z*glm::abs(c[1][0]);
-	R = glm::abs(c[2][1] * glm::dot(xInit, D) - c[0][1] * glm::dot(zInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A1xB2
-	R0 = this->size.x*glm::abs(c[2][2]) +
-		this->size.z*glm::abs(c[0][2]);
-	R1 = other->size.x*glm::abs(c[1][1]) +
-		other->size.y*glm::abs(c[1][0]);
-	R = glm::abs(c[2][2] * glm::dot(xInit, D) - c[0][2] * glm::dot(zInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A2xB0
-	R0 = this->size.x*glm::abs(c[1][0]) +
-		this->size.y*glm::abs(c[0][0]);
-	R1 = other->size.y*glm::abs(c[2][2]) +
-		other->size.z*glm::abs(c[2][1]);
-	R = glm::abs(c[0][0] * glm::dot(yInit, D) - c[1][0] * glm::dot(xInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A2xB1
-	R0 = this->size.x*glm::abs(c[1][1]) +
-		this->size.y*glm::abs(c[0][1]);
-	R1 = other->size.x*glm::abs(c[2][2]) +
-		other->size.z*glm::abs(c[2][0]);
-	R = glm::abs(c[0][1] * glm::dot(yInit, D) - c[1][1] * glm::dot(xInit, D));
-	if (R > R0 + R1)
-		return false;
-	//test A2xB2
-	R0 = this->size.x*glm::abs(c[1][2]) +
-		this->size.y*glm::abs(c[0][2]);
-	R1 = other->size.x*glm::abs(c[2][1]) +
-		other->size.y*glm::abs(c[2][0]);
-	R = glm::abs(c[0][2] * glm::dot(yInit, D) - c[1][2] * glm::dot(xInit, D));
-	if (R > R0 + R1)
-		return false;
-	return true;
-	*/
-	
-	return false;
-
-	/*
 	float left_side, right_side;
+	//Parameters of A (this):
+	glm::vec3 PA = this->center;
+	glm::vec3 Ax = this->xInit;
+	glm::vec3 Ay = this->yInit;
+	glm::vec3 Az = this->zInit;
+	float WA = this->size.x;
+	float HA = this->size.y;
+	float DA = this->size.z;
+	//Parameters of B (other):
+	glm::vec3 PB = other->center;
+	glm::vec3 Bx = other->xInit;
+	glm::vec3 By = other->yInit;
+	glm::vec3 Bz = other->zInit;
+	float WB = other->size.x;
+	float HB = other->size.y;
+	float DB = other->size.z;
+	//Variables:
+	glm::vec3 T = PB - PA;
+	glm::vec3 L;
 
-
-	//Check case 1:
-
-
-	//Check case 2:
-
-
-	//Check case 3:
-
-
-	//Check case 4:
-
-
-	//Check case 5:
-
-
-	//Check case 6:
-
-
-	//Check case 7:
-
-
-	//Check case 8:
-
-
-	//Check case 9:
-
-
-	//Check case 10:
-
-
-	//Check case 11:
-
-
-	//Check case 12:
-
-
-	//Check case 13:
-
-
-	//Check case 14:
-
-
-	//Check case 15:
-
+	//Check the 15 cases:
+	for (int i = 1; i <= 15; i++)
+	{
+		switch (i)
+		{
+			case 1:
+				L = Ax;
+				break;
+			case 2:
+				L = Ay;
+				break;
+			case 3:
+				L = Az;
+				break;
+			case 4:
+				L = Bx;
+				break;
+			case 5:
+				L = By;
+				break;
+			case 6:
+				L = Bz;
+				break;
+			case 7:
+				L = glm::cross(Ax, Bx);
+				break;
+			case 8:
+				L = glm::cross(Ax, By);
+				break;
+			case 9:
+				L = glm::cross(Ax, Bz);
+				break;
+			case 10:
+				L = glm::cross(Ay, Bx);
+				break;
+			case 11:
+				L = glm::cross(Ay, By);
+				break;
+			case 12:
+				L = glm::cross(Ay, Bz);
+				break;
+			case 13:
+				L = glm::cross(Az, Bx);
+				break;
+			case 14:
+				L = glm::cross(Az, By);
+				break;
+			case 15:
+				L = glm::cross(Az, Bz);
+				break;
+		}
+		left_side = glm::abs(glm::dot(T, L));
+		right_side = glm::abs(glm::dot(WA*Ax, L)) + glm::abs(glm::dot(HA*Ay, L)) + glm::abs(glm::dot(DA*Az, L)) +
+			glm::abs(glm::dot(WB*Bx, L)) + glm::abs(glm::dot(HB*By, L)) + glm::abs(glm::dot(DB*Bz, L));
+		if (left_side > right_side)
+			return false;
+	}
 	return true;
-	*/
 }
 
 void BoundingBox::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
