@@ -172,31 +172,36 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 
 	bvh.SetBoundingBox(glm::vec3(0, 0, 0), avg, size);
 
-	bvh.SetLeft(CreateBVH(*bvh.GetBox(), *kdtree.getRoot(), 0, true));
-	bvh.SetRight(CreateBVH(*bvh.GetBox(), *kdtree.getRoot(), 0, false));
+	bvh.SetLeft(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, true));
+	bvh.SetRight(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, false));
 }
 
-BVH* MeshConstructor::CreateBVH(BoundingBox parent, Node curr_node, int level, bool is_left)
+BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left)
 {
 	BVH* bvh = new BVH();
-	glm::vec3 begin = parent.GetBegin();
-	glm::vec3 center = parent.GetCenter();
-	glm::vec3 size = parent.GetSize();
+	glm::vec3 begin = parent->GetBegin();
+	glm::vec3 center = parent->GetCenter();
+	glm::vec3 size = parent->GetSize();
 	int curr_cut = level % 3;
-	int sign = is_left ? -1 : 1;
+	int sign = is_left ? 1 : -1;
 	
-	//TODO: Need to fix level 4,5 and scale size
+	//TODO: Need to fix level 4,5 and scale size ?
 
-	begin[curr_cut] = parent.GetBegin()[curr_cut] + sign * parent.GetSize()[curr_cut];
-	center[curr_cut] = ((parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut]) + curr_node.data[curr_cut]) / 2.0f;
-	size[curr_cut] = glm::abs(parent.GetSize()[curr_cut]) / 2.0f;
+	begin[curr_cut] = parent->GetBegin()[curr_cut] + sign * parent->GetSize()[curr_cut];
+	//center[curr_cut] = ((parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut])) / 2.0f + sign * curr_node.data[curr_cut];
+	//center[curr_cut] = curr_node->data[curr_cut] + glm::abs(curr_node->data[curr_cut] + parent->GetCenter()[curr_cut]) / 2.0f;  //---mine
+	//size[curr_cut] = center[curr_cut] + sign * curr_node.data[curr_cut];
+	
+	//Almog:
+	center[curr_cut] = ((parent->GetCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
+	size[curr_cut] = glm::abs((parent->GetCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) - center[curr_cut]);
 
 	bvh->SetBoundingBox(begin, center, size);
 
-	if (curr_node.left != nullptr)
-		bvh->SetLeft(CreateBVH(*bvh->GetBox(), *(curr_node.left), level + 1, true));
-	if (curr_node.right != nullptr)
-		bvh->SetRight(CreateBVH(*bvh->GetBox(), *(curr_node.right), level + 1, false));
+	if (curr_node->left != nullptr)
+		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true));
+	if (curr_node->right != nullptr)
+		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false));
 	return bvh;
 }
 
@@ -206,25 +211,23 @@ BVH* MeshConstructor::GetBVH()
 }
 
 // Checks collision between two bvh using BB CheckCollision
-BoundingBox* MeshConstructor::CollisionDetection(BVH* other, glm::mat4 orientation /*MeshConstructor and Mat4 ?*/)
+BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
+																		 glm::mat4 other_trans, glm::mat4 other_rot)
 {
-	/*
-	std::queue<BVH*> this_queue;
-	std::queue<BVH*> other_queue;
-	BVH* this_bvh_curr = &bvh;
-	BVH* other_bvh_curr = other;
-	BoundingBox* this_curr = bvh.GetBox();
-	BoundingBox* other_curr = other->GetBox();
+	std::queue<BVH*> queue;
+	BVH* curr = &this->bvh;
+	queue.push(curr);
 
-	this_queue.push(this_bvh_curr);
-	other_queue.push(other_bvh_curr);
-	while (!this_queue.empty() && !other_queue.empty())
+	while (!queue.empty())
 	{
-		this_curr = this_queue.front()->GetBox();
-		other_curr = other_queue.front()->GetBox();
-		this_queue.pop();
-		other_queue.pop();
-		if (this_curr->CheckCollision(other_curr))
+		curr = queue.front();
+		queue.pop();
+		other->bvh.GetBox()->UpdateDynamicVectors(other_rot, other_trans);
+		this->bvh.GetBox()->UpdateDynamicVectors(this_rot, this_trans);
+
+		if (curr->GetBox()->CheckCollision(other->bvh.GetBox()) && 
+			(other->CollisionDetection(this, other_trans, other_rot, this_trans, this_rot) != nullptr))
+
 		{
 			if (curr->GetLeft() != nullptr && curr->GetRight() != nullptr)
 			{
@@ -238,6 +241,6 @@ BoundingBox* MeshConstructor::CollisionDetection(BVH* other, glm::mat4 orientati
 			else
 				return curr->GetBox();
 		}
-	}*/
+	}
 	return nullptr;
 }

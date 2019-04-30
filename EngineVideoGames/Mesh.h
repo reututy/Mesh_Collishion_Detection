@@ -85,6 +85,12 @@ private:
 	glm::vec3 xInit;      // x axis of the box. default value (1,0,0)		  
 	glm::vec3 yInit;      // y axis of the box. default value (0,1,0)		 
 	glm::vec3 zInit;	  // z axis of the box. default value (0,0,1)
+
+	glm::vec3 fixed_center;     // fixed center coordinates
+	glm::vec3 fixed_size;       // distance between the center of the box to its side in each dimension 
+	glm::vec3 fixed_xInit;      // x axis of the box. default value (1,0,0)		  
+	glm::vec3 fixed_yInit;      // y axis of the box. default value (0,1,0)		 
+	glm::vec3 fixed_zInit;	  // z axis of the box. default value (0,0,1)
 	//TODO: Add constructor and checkCollision function:
 
 public:
@@ -92,6 +98,7 @@ public:
 	BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	~BoundingBox();
 	bool CheckCollision(BoundingBox* other);
+	void UpdateDynamicVectors(glm::mat4 rotmat, glm::mat4 transmat);
 
 	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	void SetNumOfShape(int value);
@@ -100,6 +107,8 @@ public:
 	glm::vec3 GetBegin();
 	glm::vec3 GetCenter();
 	glm::vec3 GetSize();
+	glm::vec3 GetFixedCenter();
+	glm::vec3 GetFixedSize();
 };
 
 IndexedModel CubeTriangles();

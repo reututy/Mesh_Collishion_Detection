@@ -183,16 +183,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				*/
 				break;
 			case GLFW_KEY_D:
-				scn->shapeTransformation(scn->yLocalRotate, 5.f);
+				scn->shapeTransformation(scn->zLocalRotate, -5.f);
 				break;
 			case GLFW_KEY_A:
-				scn->shapeTransformation(scn->yLocalRotate, -5.f);
+				scn->shapeTransformation(scn->zLocalRotate, 5.f);
 				break;
 			case GLFW_KEY_W:
-				scn->shapeTransformation(scn->xLocalRotate, 5.f);
+				scn->shapeTransformation(scn->xGlobalRotate, -5.f);
 				break;
 			case GLFW_KEY_S:
-				scn->shapeTransformation(scn->xLocalRotate, -5.f);
+				scn->shapeTransformation(scn->xLocalRotate, 5.f);
 				break;
 			default:
 				break;

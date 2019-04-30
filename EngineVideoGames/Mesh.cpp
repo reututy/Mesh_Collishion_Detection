@@ -248,10 +248,16 @@ BoundingBox::BoundingBox()
 {
 	begin = glm::vec3(0, 0, 0);     // begin coordinates
 	center = glm::vec3(0, 0, 0);     // center coordinates
-	size = glm::vec3(2, 2, 2);       // distance between the center of the box to its side in each dimension 
+	size = glm::vec3(0, 0, 0);       // distance between the center of the box to its side in each dimension 
 	xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
 	yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		 
 	zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
+
+	fixed_center = glm::vec3(0, 0, 0);     // fixed center coordinates
+	fixed_size = glm::vec3(0, 0, 0);       // distance between the center of the box to its side in each dimension 
+	fixed_xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
+	fixed_yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		 
+	fixed_zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
 }
 
 BoundingBox::BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
@@ -262,6 +268,12 @@ BoundingBox::BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
 	this->xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		
 	this->yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		
 	this->zInit = glm::vec3(0, 0, 1);	   // z axis of the box. default value (0,0,1)
+
+	fixed_center = center;     // fixed center coordinates
+	fixed_size = size;       // distance between the center of the box to its side in each dimension 
+	fixed_xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
+	fixed_yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		 
+	fixed_zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
 }
 
 BoundingBox::~BoundingBox() {}
@@ -368,6 +380,15 @@ bool BoundingBox::CheckCollision(BoundingBox* other)
 	return true;
 }
 
+void BoundingBox::UpdateDynamicVectors(glm::mat4 rotmat, glm::mat4 transmat)
+{
+	center = glm::vec3(transmat * glm::vec4(fixed_center, 0));
+	xInit = glm::vec3(rotmat * glm::vec4(fixed_xInit, 0));
+	yInit = glm::vec3(rotmat * glm::vec4(fixed_yInit, 0));
+	zInit = glm::vec3(rotmat * glm::vec4(fixed_zInit, 0));
+
+}
+
 void BoundingBox::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
 {
 	this->begin = begin;
@@ -376,6 +397,12 @@ void BoundingBox::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 si
 	xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
 	yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		 
 	zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
+
+	fixed_center = center;     // fixed center coordinates
+	fixed_size = size;       // distance between the center of the box to its side in each dimension 
+	fixed_xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
+	fixed_yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		 
+	fixed_zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
 }
 
 void BoundingBox::SetNumOfShape(int value)
@@ -401,5 +428,15 @@ glm::vec3 BoundingBox::GetCenter()
 glm::vec3 BoundingBox::GetSize()
 {
 	return size;
+}
+
+glm::vec3 BoundingBox::GetFixedCenter()
+{
+	return fixed_center;
+}
+
+glm::vec3 BoundingBox::GetFixedSize()
+{
+	return fixed_size;
 }
 

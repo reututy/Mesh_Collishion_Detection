@@ -50,9 +50,10 @@ public:
 	void InitLine(IndexedModel &model);
 
 	void CreateTree(std::vector<glm::vec3> positions);
-	BVH* CreateBVH(BoundingBox parent, Node curr_node, int level, bool is_left);
+	BVH* CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left);
 	//TO DO: add collision detection function which get other MeshConstructor and Mat4 of related transformasions. The function may return a pointer to the relevant Bounding Box when collide:
-	BoundingBox* CollisionDetection(BVH* other, glm::mat4 orientation /*MeshConstructor and Mat4 ?*/);
+	BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
+		glm::mat4 other_trans, glm::mat4 other_rot);
 
 	BVH* GetBVH();
 };
