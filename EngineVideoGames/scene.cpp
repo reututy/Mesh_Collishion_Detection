@@ -527,10 +527,10 @@ void Scene::CheckCollisionDetection()
 			{
 				if (shape2->GetMode() == TRIANGLES && shape1->GetNumOfShape() != shape2->GetNumOfShape())
 				{
-					//std::cout << std::endl;
-					//std::cout << "Checks collision: " << std::endl;
-					//std::cout << "shape1: " << shape1->GetNumOfShape() << std::endl;
-					//std::cout << "shape2: " << shape2->GetNumOfShape() << std::endl;
+					std::cout << std::endl;
+					std::cout << "Checks collision: " << std::endl;
+					std::cout << "shape1: " << shape1->GetNumOfShape() << std::endl;
+					std::cout << "shape2: " << shape2->GetNumOfShape() << std::endl;
 					box_to_draw_index = shape1->CollisionDetection(shape2);
 					if (box_to_draw_index > -1)
 						shapes[box_to_draw_index]->Unhide();

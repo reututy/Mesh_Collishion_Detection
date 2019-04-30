@@ -208,27 +208,36 @@ BVH* MeshConstructor::GetBVH()
 // Checks collision between two bvh using BB CheckCollision
 BoundingBox* MeshConstructor::CollisionDetection(BVH* other, glm::mat4 orientation /*MeshConstructor and Mat4 ?*/)
 {
-	std::queue<BVH*> self_queue;
-	BVH* self_curr = &this->bvh;
-	self_queue.push(self_curr);
-	while (!self_queue.empty()) 
+	/*
+	std::queue<BVH*> this_queue;
+	std::queue<BVH*> other_queue;
+	BVH* this_bvh_curr = &bvh;
+	BVH* other_bvh_curr = other;
+	BoundingBox* this_curr = bvh.GetBox();
+	BoundingBox* other_curr = other->GetBox();
+
+	this_queue.push(this_bvh_curr);
+	other_queue.push(other_bvh_curr);
+	while (!this_queue.empty() && !other_queue.empty())
 	{
-		self_curr = self_queue.front();
-		self_queue.pop();
-		if (self_curr->GetBox()->CheckCollision(other->GetBox())) 
+		this_curr = this_queue.front()->GetBox();
+		other_curr = other_queue.front()->GetBox();
+		this_queue.pop();
+		other_queue.pop();
+		if (this_curr->CheckCollision(other_curr))
 		{
-			if (self_curr->GetLeft() != nullptr && self_curr->GetRight() != nullptr) 
+			if (curr->GetLeft() != nullptr && curr->GetRight() != nullptr)
 			{
-				self_queue.push(self_curr->GetLeft());
-				self_queue.push(self_curr->GetRight());
+				queue.push(curr->GetLeft());
+				queue.push(curr->GetRight());
 			}
-			else if (self_curr->GetLeft() != nullptr)
-				self_queue.push(self_curr->GetLeft());
-			else if (self_curr->GetRight() != nullptr)
-				self_queue.push(self_curr->GetRight());
+			else if (curr->GetLeft() != nullptr)
+				queue.push(curr->GetLeft());
+			else if (curr->GetRight() != nullptr)
+				queue.push(curr->GetRight());
 			else
-				return self_curr->GetBox();
+				return curr->GetBox();
 		}
-	}
+	}*/
 	return nullptr;
 }
