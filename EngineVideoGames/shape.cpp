@@ -87,13 +87,13 @@ Shape::~Shape(void)
 
 // Returns -1 if there is no collision 
 int Shape::CollisionDetection(Shape* other)
-{	/*
+{	
 	//TODO: Check the orientation
 	BoundingBox* box_that_collides = mesh->CollisionDetection(other->GetMesh(), 
 															  glm::translate(glm::mat4(1), glm::vec3(this->getTraslate())), GetRot(),
 															  glm::translate(glm::mat4(1), glm::vec3(other->getTraslate())), other->GetRot());
 	if (box_that_collides != nullptr)
-		return box_that_collides->GetNumOfShape();*/
+		return box_that_collides->GetNumOfShape();
 	return -1;
 }
 

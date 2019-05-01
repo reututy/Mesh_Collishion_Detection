@@ -214,6 +214,22 @@ BVH* MeshConstructor::GetBVH()
 BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
 																		 glm::mat4 other_trans, glm::mat4 other_rot)
 {
+	//First Checks if the big boxes collides:
+	BVH* curr = &this->bvh;
+	if (curr->GetBox()->CheckCollision(other->bvh.GetBox()))
+	{
+		std::cout << "They collide! "<< std::endl;
+		return curr->GetBox();
+	}
+
+	/*
+	BVH* curr = &this->bvh;
+	if (curr->GetBox()->CheckCollision(other->bvh.GetBox()))
+	{
+
+	}*/
+
+	/*
 	std::queue<BVH*> queue;
 	BVH* curr = &this->bvh;
 	queue.push(curr);
@@ -241,6 +257,6 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 			else
 				return curr->GetBox();
 		}
-	}
+	}*/
 	return nullptr;
 }

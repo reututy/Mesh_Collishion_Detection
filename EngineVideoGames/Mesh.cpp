@@ -382,7 +382,7 @@ bool BoundingBox::CheckCollision(BoundingBox* other)
 
 void BoundingBox::UpdateDynamicVectors(glm::mat4 rotmat, glm::mat4 transmat)
 {
-	center = glm::vec3(transmat * glm::vec4(fixed_center, 0));
+	center = glm::vec3(transmat * glm::vec4(fixed_center, 1));
 	xInit = glm::vec3(rotmat * glm::vec4(fixed_xInit, 0));
 	yInit = glm::vec3(rotmat * glm::vec4(fixed_yInit, 0));
 	zInit = glm::vec3(rotmat * glm::vec4(fixed_zInit, 0));

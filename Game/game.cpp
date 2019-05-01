@@ -118,7 +118,7 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	chainParents[pickedShape] = parent;
 
 	//TODO: Need to fix level 4,5 ?
-	if (level == 1)
+	if (level == 0)
 		shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
