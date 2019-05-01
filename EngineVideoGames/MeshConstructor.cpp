@@ -7,6 +7,18 @@
 #include "bezier2D.h"
 #include "obj_loader.h"
 
+static void printMat(const glm::mat4 mat)
+{
+	std::cout << " matrix:" << std::endl;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+			std::cout << mat[j][i] << " ";
+		std::cout << std::endl;
+	}
+}
+
+
 MeshConstructor::MeshConstructor(const int type)
 {
 	switch (type)
@@ -188,11 +200,6 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	//TODO: Need to fix level 4,5 and scale size ?
 
 	begin[curr_cut] = parent->GetBegin()[curr_cut] + sign * parent->GetSize()[curr_cut];
-	//center[curr_cut] = ((parent.GetCenter()[curr_cut] + sign * parent.GetSize()[curr_cut])) / 2.0f + sign * curr_node.data[curr_cut];
-	//center[curr_cut] = curr_node->data[curr_cut] + glm::abs(curr_node->data[curr_cut] + parent->GetCenter()[curr_cut]) / 2.0f;  //---mine
-	//size[curr_cut] = center[curr_cut] + sign * curr_node.data[curr_cut];
-	
-	//Almog:
 	center[curr_cut] = ((parent->GetCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
 	size[curr_cut] = glm::abs((parent->GetCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) - center[curr_cut]);
 
@@ -215,11 +222,57 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 																		 glm::mat4 other_trans, glm::mat4 other_rot)
 {
 	//First Checks if the big boxes collides:
-	BVH* curr = &this->bvh;
-	if (curr->GetBox()->CheckCollision(other->bvh.GetBox()))
+	BVH* this_curr = &this->bvh;
+	BVH* other_curr = other->GetBVH();
+
+	/*
+	std::cout << "---BEFORE:---" << std::endl;
+	std::cout << "this_center: " << std::endl;
+	std::cout << this_curr->GetBox()->GetCenter().x << " " << this_curr->GetBox()->GetCenter().y << " " << this_curr->GetBox()->GetCenter().z << " " << std::endl;
+	std::cout << "other_curr: " << std::endl;
+	std::cout << other_curr->GetBox()->GetCenter().x << " " << other_curr->GetBox()->GetCenter().y << " " << other_curr->GetBox()->GetCenter().z << " " << std::endl;
+
+	std::cout << "this_trans: " << std::endl;
+	printMat(this_trans);
+	std::cout << "this_rot: " << std::endl;
+	printMat(this_rot);
+	std::cout << "other_trans: " << std::endl;
+	printMat(other_trans);
+	std::cout << "other_rot: " << std::endl;
+	printMat(other_rot);
+	*/
+	this_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
+	other_curr->GetBox()->UpdateDynamicVectors(other_trans, other_rot);
+	/*
+	std::cout <<"---AFTER:---" << std::endl;
+	std::cout << "this_center: "<< std::endl;
+	std::cout << this_curr->GetBox()->GetCenter().x << " " << this_curr->GetBox()->GetCenter().y << " " << this_curr->GetBox()->GetCenter().z << " " << std::endl;
+	std::cout << "other_curr: " << std::endl;
+	std::cout << other_curr->GetBox()->GetCenter().x << " " << other_curr->GetBox()->GetCenter().y << " " << other_curr->GetBox()->GetCenter().z << " " << std::endl;
+	std::cout << "this_xInit: " << std::endl;
+	std::cout << this_curr->GetBox()->GetxInit().x << " " << this_curr->GetBox()->GetxInit().y << " " << this_curr->GetBox()->GetxInit().z << " " << std::endl;
+	std::cout << "other_xInit: " << std::endl;
+	std::cout << other_curr->GetBox()->GetxInit().x << " " << other_curr->GetBox()->GetxInit().y << " " << other_curr->GetBox()->GetxInit().z << " " << std::endl;
+	std::cout << "this_xInit: " << std::endl;
+	std::cout << this_curr->GetBox()->GetxInit().x << " " << this_curr->GetBox()->GetxInit().y << " " << this_curr->GetBox()->GetxInit().z << " " << std::endl;
+	std::cout << "other_xInit: " << std::endl;
+	std::cout << other_curr->GetBox()->GetxInit().x << " " << other_curr->GetBox()->GetxInit().y << " " << other_curr->GetBox()->GetxInit().z << " " << std::endl;
+
+	std::cout << "this_yInit: " << std::endl;
+	std::cout << this_curr->GetBox()->GetyInit().x << " " << this_curr->GetBox()->GetyInit().y << " " << this_curr->GetBox()->GetyInit().z << " " << std::endl;
+	std::cout << "other_yInit: " << std::endl;
+	std::cout << other_curr->GetBox()->GetyInit().x << " " << other_curr->GetBox()->GetyInit().y << " " << other_curr->GetBox()->GetyInit().z << " " << std::endl;
+	
+	std::cout << "this_zInit: " << std::endl;
+	std::cout << this_curr->GetBox()->GetzInit().x << " " << this_curr->GetBox()->GetzInit().y << " " << this_curr->GetBox()->GetzInit().z << " " << std::endl;
+	std::cout << "other_zInit: " << std::endl;
+	std::cout << other_curr->GetBox()->GetzInit().x << " " << other_curr->GetBox()->GetzInit().y << " " << other_curr->GetBox()->GetzInit().z << " " << std::endl;
+	*/
+
+	if (this_curr->GetBox()->CheckCollision(other_curr->GetBox()))
 	{
 		std::cout << "They collide! "<< std::endl;
-		return curr->GetBox();
+		return this_curr->GetBox();
 	}
 
 	/*
@@ -260,3 +313,4 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 	}*/
 	return nullptr;
 }
+

@@ -533,7 +533,10 @@ void Scene::CheckCollisionDetection()
 					//std::cout << "shape2: " << shape2->GetNumOfShape() << std::endl;
 					box_to_draw_index = shape1->CollisionDetection(shape2);
 					if (box_to_draw_index > -1)
-						shapes[box_to_draw_index]->Unhide();
+					{
+						std::cout << "Checks collision: They collide!" << std::endl;
+						//shapes[box_to_draw_index]->Unhide();
+					}
 				}
 			}
 		}

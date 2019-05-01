@@ -302,24 +302,40 @@ bool BoundingBox::CheckCollision(BoundingBox* other)
 	float left_side, right_side;
 	//Parameters of A (this):
 	glm::vec3 PA = this->center;
-	glm::vec3 Ax = this->xInit;
-	glm::vec3 Ay = this->yInit;
-	glm::vec3 Az = this->zInit;
+	glm::vec3 Ax = glm::normalize(this->xInit);
+	glm::vec3 Ay = glm::normalize(this->yInit);
+	glm::vec3 Az = glm::normalize(this->zInit);
 	float WA = this->size.x;
 	float HA = this->size.y;
 	float DA = this->size.z;
 	//Parameters of B (other):
 	glm::vec3 PB = other->center;
-	glm::vec3 Bx = other->xInit;
-	glm::vec3 By = other->yInit;
-	glm::vec3 Bz = other->zInit;
+	glm::vec3 Bx = glm::normalize(other->xInit);
+	glm::vec3 By = glm::normalize(other->yInit);
+	glm::vec3 Bz = glm::normalize(other->zInit);
 	float WB = other->size.x;
 	float HB = other->size.y;
 	float DB = other->size.z;
 	//Variables:
 	glm::vec3 T = PB - PA;
 	glm::vec3 L;
+	/*
+	std::cout << "CheckCollision normalize: ------------------------------" << std::endl;
+	std::cout << "this_xInit: " << std::endl;
+	std::cout << Ax.x << " " << Ax.y << " " << Ax.z << " " << std::endl;
+	std::cout << "other_xInit: " << std::endl;
+	std::cout << Bx.x << " " << Bx.y << " " << Bx.z << " " << std::endl;
 
+	std::cout << "this_yInit: " << std::endl;
+	std::cout << Ay.x << " " << Ay.y << " " << Ay.z << " " << std::endl;
+	std::cout << "other_yInit: " << std::endl;
+	std::cout << By.x << " " << By.y << " " << By.z << " " << std::endl;
+
+	std::cout << "this_zInit: " << std::endl;
+	std::cout << Az.x << " " << Az.y << " " << Az.z << " " << std::endl;
+	std::cout << "other_zInit: " << std::endl;
+	std::cout << Bz.x << " " << Bz.y << " " << Bz.z << " " << std::endl;
+	*/
 	//Check the 15 cases:
 	for (int i = 1; i <= 15; i++)
 	{
@@ -380,13 +396,12 @@ bool BoundingBox::CheckCollision(BoundingBox* other)
 	return true;
 }
 
-void BoundingBox::UpdateDynamicVectors(glm::mat4 rotmat, glm::mat4 transmat)
+void BoundingBox::UpdateDynamicVectors(glm::mat4 translate, glm::mat4 rotate)
 {
-	center = glm::vec3(transmat * glm::vec4(fixed_center, 1));
-	xInit = glm::vec3(rotmat * glm::vec4(fixed_xInit, 0));
-	yInit = glm::vec3(rotmat * glm::vec4(fixed_yInit, 0));
-	zInit = glm::vec3(rotmat * glm::vec4(fixed_zInit, 0));
-
+	center = glm::vec3(translate * glm::vec4(fixed_center, 1));
+	xInit = glm::vec3(rotate * glm::vec4(fixed_xInit, 0));
+	yInit = glm::vec3(rotate * glm::vec4(fixed_yInit, 0));
+	zInit = glm::vec3(rotate * glm::vec4(fixed_zInit, 0));
 }
 
 void BoundingBox::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
@@ -428,6 +443,21 @@ glm::vec3 BoundingBox::GetCenter()
 glm::vec3 BoundingBox::GetSize()
 {
 	return size;
+}
+
+glm::vec3 BoundingBox::GetxInit()
+{
+	return xInit;
+}
+
+glm::vec3 BoundingBox::GetyInit()
+{
+	return yInit;
+}
+
+glm::vec3 BoundingBox::GetzInit()
+{
+	return zInit;
 }
 
 glm::vec3 BoundingBox::GetFixedCenter()

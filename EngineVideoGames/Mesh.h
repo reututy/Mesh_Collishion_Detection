@@ -98,7 +98,7 @@ public:
 	BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	~BoundingBox();
 	bool CheckCollision(BoundingBox* other);
-	void UpdateDynamicVectors(glm::mat4 rotmat, glm::mat4 transmat);
+	void UpdateDynamicVectors(glm::mat4 translate, glm::mat4 rotate);
 
 	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	void SetNumOfShape(int value);
@@ -107,6 +107,9 @@ public:
 	glm::vec3 GetBegin();
 	glm::vec3 GetCenter();
 	glm::vec3 GetSize();
+	glm::vec3 GetxInit();
+	glm::vec3 GetyInit();
+	glm::vec3 GetzInit();
 	glm::vec3 GetFixedCenter();
 	glm::vec3 GetFixedSize();
 };
