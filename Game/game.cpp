@@ -104,6 +104,7 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	addShapeCopy(1, -1, LINE_LOOP);
 	pickedShape = shapes.size() - 1;
 	bvh->GetBox()->SetNumOfShape(pickedShape);
+	bvh->SetLevel(level);
 
 	shapeTransformation(xScale, bvh->GetBox()->GetSize().x);
 	shapeTransformation(yScale, bvh->GetBox()->GetSize().y);

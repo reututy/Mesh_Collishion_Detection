@@ -38,6 +38,11 @@ void BVH::SetRight(BVH* bvh)
 	right = bvh;
 }
 
+void BVH::SetLevel(int value)
+{
+	level = value;
+}
+
 BoundingBox* BVH::GetBox()
 {
 	return box;
@@ -51,4 +56,9 @@ BVH* BVH::GetLeft()
 BVH* BVH::GetRight()
 {
 	return right;
+}
+
+int BVH::GetLevel()
+{
+	return level;
 }

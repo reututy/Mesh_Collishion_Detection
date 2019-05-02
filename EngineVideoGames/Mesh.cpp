@@ -425,9 +425,19 @@ void BoundingBox::SetNumOfShape(int value)
 	num_of_shape = value;
 }
 
+void BoundingBox::SetNumOfPoints(int value)
+{
+	num_of_points = value;
+}
+
 int BoundingBox::GetNumOfShape()
 {
 	return num_of_shape;
+}
+
+int BoundingBox::GetNumOfPoints()
+{
+	return num_of_points;
 }
 
 glm::vec3 BoundingBox::GetBegin()

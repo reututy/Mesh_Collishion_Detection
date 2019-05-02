@@ -17,6 +17,8 @@ private:
 	//TO DO: add bounding box data base and build it in the constructor:
 	Kdtree kdtree;
 	BVH bvh;
+	std::vector<glm::vec3> positions;
+
 	
 	std::vector<VertexBuffer*> vbs;
 	bool is2D;
@@ -50,7 +52,7 @@ public:
 	void InitLine(IndexedModel &model);
 
 	void CreateTree(std::vector<glm::vec3> positions);
-	BVH* CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left);
+	BVH* CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left, int num_of_points);
 	//TO DO: add collision detection function which get other MeshConstructor and Mat4 of related transformasions. The function may return a pointer to the relevant Bounding Box when collide:
 	BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
 		glm::mat4 other_trans, glm::mat4 other_rot);

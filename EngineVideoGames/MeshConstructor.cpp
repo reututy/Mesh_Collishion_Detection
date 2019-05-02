@@ -100,6 +100,7 @@ void MeshConstructor::InitLine(IndexedModel &model){
 void MeshConstructor::InitMesh(IndexedModel &model){
 
 	CreateTree(model.positions);
+	positions = model.positions;
 	int verticesNum = model.positions.size();
 	indicesNum = model.indices.size();
 	
@@ -184,11 +185,11 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 
 	bvh.SetBoundingBox(glm::vec3(0, 0, 0), avg, size);
 
-	bvh.SetLeft(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, true));
-	bvh.SetRight(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, false));
+	bvh.SetLeft(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, true, positions.size()));
+	bvh.SetRight(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, false, positions.size()));
 }
 
-BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left)
+BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left, int num_of_points)
 {
 	BVH* bvh = new BVH();
 	glm::vec3 begin = parent->GetBegin();
@@ -196,7 +197,7 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	glm::vec3 size = parent->GetSize();
 	int curr_cut = level % 3;
 	int sign = is_left ? 1 : -1;
-	
+
 	//TODO: Need to fix level 4,5 and scale size ?
 
 	begin[curr_cut] = parent->GetBegin()[curr_cut] + sign * parent->GetSize()[curr_cut];
@@ -204,11 +205,12 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) - center[curr_cut]);
 
 	bvh->SetBoundingBox(begin, center, size);
+	bvh->GetBox()->SetNumOfPoints(num_of_points);
 
 	if (curr_node->left != nullptr)
-		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true));
+		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true, num_of_points / 2));
 	if (curr_node->right != nullptr)
-		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false));
+		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2));
 	return bvh;
 }
 
@@ -275,12 +277,7 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 		return this_curr->GetBox();
 	}
 
-	/*
-	BVH* curr = &this->bvh;
-	if (curr->GetBox()->CheckCollision(other->bvh.GetBox()))
-	{
 
-	}*/
 
 	/*
 	std::queue<BVH*> queue;
