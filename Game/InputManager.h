@@ -159,16 +159,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 					*/
 				break;
 				case GLFW_KEY_RIGHT:
-				scn->shapeTransformation(scn->xLocalTranslate, 0.1f);
+				scn->shapeTransformation(scn->xGlobalTranslate, 0.1f);
 				break;
 			case GLFW_KEY_LEFT:
-				scn->shapeTransformation(scn->xLocalTranslate, -0.1f);
+				scn->shapeTransformation(scn->xGlobalTranslate, -0.1f);
 				break;
 			case GLFW_KEY_UP:
-				scn->shapeTransformation(scn->yLocalTranslate, 0.1f);
+				scn->shapeTransformation(scn->yGlobalTranslate, 0.1f);
 				break;
 			case GLFW_KEY_DOWN:
-				scn->shapeTransformation(scn->yLocalTranslate, -0.1f);
+				scn->shapeTransformation(scn->yGlobalTranslate, -0.1f);
 				break;
 			case GLFW_KEY_M:
 				curr_mode = (curr_mode + 1) % NO_OF_MODES;

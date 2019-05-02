@@ -109,9 +109,9 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	shapeTransformation(yScale, bvh->GetBox()->GetSize().y);
 	shapeTransformation(zScale, bvh->GetBox()->GetSize().z);
 
-	shapeTransformation(xLocalTranslate, bvh->GetBox()->GetCenter().x); 
-	shapeTransformation(yLocalTranslate, bvh->GetBox()->GetCenter().y);
-	shapeTransformation(zLocalTranslate, bvh->GetBox()->GetCenter().z);
+	shapeTransformation(xLocalTranslate, 2 * bvh->GetBox()->GetFixedCenter().x);
+	shapeTransformation(yLocalTranslate, 2 * bvh->GetBox()->GetFixedCenter().y);
+	shapeTransformation(zLocalTranslate, 2 * bvh->GetBox()->GetFixedCenter().z);
 
 	//TODO: need to hide all the shapes unless the large box
 	shapes[pickedShape]->Hide();

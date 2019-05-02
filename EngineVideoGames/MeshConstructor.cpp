@@ -192,7 +192,7 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 {
 	BVH* bvh = new BVH();
 	glm::vec3 begin = parent->GetBegin();
-	glm::vec3 center = parent->GetCenter();
+	glm::vec3 center = parent->GetFixedCenter();
 	glm::vec3 size = parent->GetSize();
 	int curr_cut = level % 3;
 	int sign = is_left ? 1 : -1;
@@ -200,8 +200,8 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	//TODO: Need to fix level 4,5 and scale size ?
 
 	begin[curr_cut] = parent->GetBegin()[curr_cut] + sign * parent->GetSize()[curr_cut];
-	center[curr_cut] = ((parent->GetCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
-	size[curr_cut] = glm::abs((parent->GetCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) - center[curr_cut]);
+	center[curr_cut] = ((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
+	size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) - center[curr_cut]);
 
 	bvh->SetBoundingBox(begin, center, size);
 

@@ -2,7 +2,18 @@
 #include <GL\glew.h>
 #include "shape.h"
 #include "Log.hpp"
+#include <iostream>
 
+static void printMat(const glm::mat4 mat)
+{
+	std::cout << " matrix:" << std::endl;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+			std::cout << mat[j][i] << " ";
+		std::cout << std::endl;
+	}
+}
 
 Shape::Shape(const Shape& shape,unsigned int mode)
 {
@@ -92,6 +103,8 @@ int Shape::CollisionDetection(Shape* other)
 	BoundingBox* box_that_collides = mesh->CollisionDetection(other->GetMesh(), 
 															  glm::translate(glm::mat4(1), glm::vec3(this->getTraslate())), GetRot(),
 															  glm::translate(glm::mat4(1), glm::vec3(other->getTraslate())), other->GetRot());
+	//printMat(glm::translate(glm::mat4(1), glm::vec3(this->getTraslate())));
+	//printMat(glm::translate(glm::mat4(1), glm::vec3(other->getTraslate())));
 	if (box_that_collides != nullptr)
 		return box_that_collides->GetNumOfShape();
 	return -1;
