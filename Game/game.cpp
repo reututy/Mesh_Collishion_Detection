@@ -117,10 +117,11 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	//TODO: need to hide all the shapes unless the large box
 	shapes[pickedShape]->Hide();
 	chainParents[pickedShape] = parent;
+	shapes[parent+1]->Unhide();
 
 	//TODO: Need to fix level 4,5 ?
-	if (level == 0)
-		shapes[pickedShape]->Unhide();
+	//if (level == 0)
+		//shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
 	if (bvh->GetRight() != nullptr)

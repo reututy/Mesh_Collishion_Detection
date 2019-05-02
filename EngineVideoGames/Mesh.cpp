@@ -5,6 +5,7 @@
 #define GREEN glm::vec3(0, 1, 0)
 #define RED glm::vec3(1, 0, 0)
 
+#define NUM_OF_POINTS 2
 
 void IndexedModel::CalcNormals()
 {
@@ -402,6 +403,11 @@ void BoundingBox::UpdateDynamicVectors(glm::mat4 translate, glm::mat4 rotate)
 	xInit = glm::vec3(rotate * glm::vec4(fixed_xInit, 0));
 	yInit = glm::vec3(rotate * glm::vec4(fixed_yInit, 0));
 	zInit = glm::vec3(rotate * glm::vec4(fixed_zInit, 0));
+}
+
+bool BoundingBox::IsSmallestBox()
+{
+	return num_of_points <= NUM_OF_POINTS;
 }
 
 void BoundingBox::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)

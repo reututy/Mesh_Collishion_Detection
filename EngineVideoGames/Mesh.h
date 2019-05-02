@@ -101,6 +101,7 @@ public:
 	bool CheckCollision(BoundingBox* other);
 	void UpdateDynamicVectors(glm::mat4 translate, glm::mat4 rotate);
 
+	bool IsSmallestBox();
 	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	void SetNumOfShape(int value);
 	void SetNumOfPoints(int value);
