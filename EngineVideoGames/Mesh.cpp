@@ -5,7 +5,7 @@
 #define GREEN glm::vec3(0, 1, 0)
 #define RED glm::vec3(1, 0, 0)
 
-#define NUM_OF_POINTS 2
+#define NUM_OF_POINTS 1
 
 void IndexedModel::CalcNormals()
 {
@@ -259,6 +259,8 @@ BoundingBox::BoundingBox()
 	fixed_xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
 	fixed_yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		 
 	fixed_zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
+	num_of_points = 0;
+	num_of_shape = 0;
 }
 
 BoundingBox::BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
@@ -275,6 +277,9 @@ BoundingBox::BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
 	fixed_xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
 	fixed_yInit = glm::vec3(0, 1, 0);      // y axis of the box. default value (0,1,0)		 
 	fixed_zInit = glm::vec3(0, 0, 1);	  // z axis of the box. default value (0,0,1)
+
+	num_of_points = 0;
+	num_of_shape = 0;
 }
 
 BoundingBox::~BoundingBox() {}
@@ -320,23 +325,7 @@ bool BoundingBox::CheckCollision(BoundingBox* other)
 	//Variables:
 	glm::vec3 T = PB - PA;
 	glm::vec3 L;
-	/*
-	std::cout << "CheckCollision normalize: ------------------------------" << std::endl;
-	std::cout << "this_xInit: " << std::endl;
-	std::cout << Ax.x << " " << Ax.y << " " << Ax.z << " " << std::endl;
-	std::cout << "other_xInit: " << std::endl;
-	std::cout << Bx.x << " " << Bx.y << " " << Bx.z << " " << std::endl;
 
-	std::cout << "this_yInit: " << std::endl;
-	std::cout << Ay.x << " " << Ay.y << " " << Ay.z << " " << std::endl;
-	std::cout << "other_yInit: " << std::endl;
-	std::cout << By.x << " " << By.y << " " << By.z << " " << std::endl;
-
-	std::cout << "this_zInit: " << std::endl;
-	std::cout << Az.x << " " << Az.y << " " << Az.z << " " << std::endl;
-	std::cout << "other_zInit: " << std::endl;
-	std::cout << Bz.x << " " << Bz.y << " " << Bz.z << " " << std::endl;
-	*/
 	//Check the 15 cases:
 	for (int i = 1; i <= 15; i++)
 	{

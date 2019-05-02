@@ -224,90 +224,56 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 																		 glm::mat4 other_trans, glm::mat4 other_rot)
 {
 	//First Checks if the big boxes collides:
+	std::vector<std::pair<BVH*, BVH*>> queue;
 	BVH* this_curr = &this->bvh;
 	BVH* other_curr = other->GetBVH();
 
 	/*
-	std::cout << "---BEFORE:---" << std::endl;
-	std::cout << "this_center: " << std::endl;
-	std::cout << this_curr->GetBox()->GetCenter().x << " " << this_curr->GetBox()->GetCenter().y << " " << this_curr->GetBox()->GetCenter().z << " " << std::endl;
-	std::cout << "other_curr: " << std::endl;
-	std::cout << other_curr->GetBox()->GetCenter().x << " " << other_curr->GetBox()->GetCenter().y << " " << other_curr->GetBox()->GetCenter().z << " " << std::endl;
-
-	std::cout << "this_trans: " << std::endl;
-	printMat(this_trans);
-	std::cout << "this_rot: " << std::endl;
-	printMat(this_rot);
-	std::cout << "other_trans: " << std::endl;
-	printMat(other_trans);
-	std::cout << "other_rot: " << std::endl;
-	printMat(other_rot);
-	*/
 	this_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
 	other_curr->GetBox()->UpdateDynamicVectors(other_trans, other_rot);
-	/*
-	std::cout <<"---AFTER:---" << std::endl;
-	std::cout << "this_center: "<< std::endl;
-	std::cout << this_curr->GetBox()->GetCenter().x << " " << this_curr->GetBox()->GetCenter().y << " " << this_curr->GetBox()->GetCenter().z << " " << std::endl;
-	std::cout << "other_curr: " << std::endl;
-	std::cout << other_curr->GetBox()->GetCenter().x << " " << other_curr->GetBox()->GetCenter().y << " " << other_curr->GetBox()->GetCenter().z << " " << std::endl;
-	std::cout << "this_xInit: " << std::endl;
-	std::cout << this_curr->GetBox()->GetxInit().x << " " << this_curr->GetBox()->GetxInit().y << " " << this_curr->GetBox()->GetxInit().z << " " << std::endl;
-	std::cout << "other_xInit: " << std::endl;
-	std::cout << other_curr->GetBox()->GetxInit().x << " " << other_curr->GetBox()->GetxInit().y << " " << other_curr->GetBox()->GetxInit().z << " " << std::endl;
-	std::cout << "this_xInit: " << std::endl;
-	std::cout << this_curr->GetBox()->GetxInit().x << " " << this_curr->GetBox()->GetxInit().y << " " << this_curr->GetBox()->GetxInit().z << " " << std::endl;
-	std::cout << "other_xInit: " << std::endl;
-	std::cout << other_curr->GetBox()->GetxInit().x << " " << other_curr->GetBox()->GetxInit().y << " " << other_curr->GetBox()->GetxInit().z << " " << std::endl;
-
-	std::cout << "this_yInit: " << std::endl;
-	std::cout << this_curr->GetBox()->GetyInit().x << " " << this_curr->GetBox()->GetyInit().y << " " << this_curr->GetBox()->GetyInit().z << " " << std::endl;
-	std::cout << "other_yInit: " << std::endl;
-	std::cout << other_curr->GetBox()->GetyInit().x << " " << other_curr->GetBox()->GetyInit().y << " " << other_curr->GetBox()->GetyInit().z << " " << std::endl;
 	
-	std::cout << "this_zInit: " << std::endl;
-	std::cout << this_curr->GetBox()->GetzInit().x << " " << this_curr->GetBox()->GetzInit().y << " " << this_curr->GetBox()->GetzInit().z << " " << std::endl;
-	std::cout << "other_zInit: " << std::endl;
-	std::cout << other_curr->GetBox()->GetzInit().x << " " << other_curr->GetBox()->GetzInit().y << " " << other_curr->GetBox()->GetzInit().z << " " << std::endl;
-	*/
-
 	if (this_curr->GetBox()->CheckCollision(other_curr->GetBox()))
 	{
 		std::cout << "They collide! "<< std::endl;
 		return this_curr->GetBox();
 	}
+	*/
 
-
-
-	/*
-	std::queue<BVH*> queue;
-	BVH* curr = &this->bvh;
-	queue.push(curr);
-
+	queue.emplace_back(this_curr, other_curr);
 	while (!queue.empty())
 	{
-		curr = queue.front();
-		queue.pop();
-		other->bvh.GetBox()->UpdateDynamicVectors(other_rot, other_trans);
-		this->bvh.GetBox()->UpdateDynamicVectors(this_rot, this_trans);
-
-		if (curr->GetBox()->CheckCollision(other->bvh.GetBox()) && 
-			(other->CollisionDetection(this, other_trans, other_rot, this_trans, this_rot) != nullptr))
-
+		this_curr = queue.back().first;
+		other_curr = queue.back().second;
+		queue.pop_back();
+		
+		this_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
+		other_curr->GetBox()->UpdateDynamicVectors(other_trans, other_rot);
+		if (this_curr->GetBox()->CheckCollision(other_curr->GetBox()))
 		{
-			if (curr->GetLeft() != nullptr && curr->GetRight() != nullptr)
+			if (this_curr->IsSmallestBox() && other_curr->IsSmallestBox())
 			{
-				queue.push(curr->GetLeft());
-				queue.push(curr->GetRight());
+				return this_curr->GetBox();
 			}
-			else if (curr->GetLeft() != nullptr)
-				queue.push(curr->GetLeft());
-			else if (curr->GetRight() != nullptr)
-				queue.push(curr->GetRight());
+			//Pushes children boxes into queue
+			if (this_curr->IsSmallestBox() && other_curr != nullptr)
+			{
+				queue.emplace_back(this_curr, other_curr->GetLeft());
+				queue.emplace_back(this_curr, other_curr->GetRight());
+			}
+			else if (other_curr->IsSmallestBox() && this_curr != nullptr)
+			{
+				queue.emplace_back(other_curr->GetLeft(), other_curr);
+				queue.emplace_back(other_curr->GetRight(), other_curr);
+			}
 			else
-				return curr->GetBox();
+			{
+				queue.emplace_back(this_curr->GetLeft(), other_curr->GetLeft());
+				queue.emplace_back(this_curr->GetRight(), other_curr->GetLeft());
+				queue.emplace_back(this_curr->GetLeft(), other_curr->GetRight());
+				queue.emplace_back(this_curr->GetRight(), other_curr->GetRight());
+			}
 		}
-	}*/
+	}
 	return nullptr;
 }
 

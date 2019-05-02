@@ -114,10 +114,11 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	shapeTransformation(yLocalTranslate, 2 * bvh->GetBox()->GetFixedCenter().y);
 	shapeTransformation(zLocalTranslate, 2 * bvh->GetBox()->GetFixedCenter().z);
 
-	//TODO: need to hide all the shapes unless the large box
+	//Hides all the shapes unless the large boxes
 	shapes[pickedShape]->Hide();
 	chainParents[pickedShape] = parent;
-	shapes[parent+1]->Unhide();
+	if (level == 0)
+		shapes[pickedShape]->Unhide();
 
 	//TODO: Need to fix level 4,5 ?
 	//if (level == 0)

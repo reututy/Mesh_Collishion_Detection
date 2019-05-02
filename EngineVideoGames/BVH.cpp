@@ -20,6 +20,18 @@ BVH::~BVH()
 	*/
 }
 
+bool BVH::IsLeaf()
+{
+	bool is = left == nullptr && right == nullptr;
+	return is;
+}
+
+bool BVH::IsSmallestBox()
+{
+	bool is = IsLeaf() && box->IsSmallestBox();
+	return is;
+}
+
 void BVH::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
 {
 	if (box == nullptr)

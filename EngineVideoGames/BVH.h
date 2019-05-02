@@ -15,6 +15,9 @@ public:
 	BVH();
 	~BVH();
 
+	bool IsLeaf();
+	bool IsSmallestBox();
+
 	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
 	void SetLeft(BVH* bvh);
 	void SetRight(BVH* bvh);

@@ -535,7 +535,7 @@ void Scene::CheckCollisionDetection()
 					if (box_to_draw_index > -1)
 					{
 						std::cout << "Checks collision: They collide!" << std::endl;
-						//shapes[box_to_draw_index]->Unhide();
+						shapes[box_to_draw_index]->Unhide();
 					}
 				}
 			}
