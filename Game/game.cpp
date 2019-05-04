@@ -117,11 +117,11 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	//Hides all the shapes unless the large boxes
 	shapes[pickedShape]->Hide();
 	chainParents[pickedShape] = parent;
-	if (level == 0)
-		shapes[pickedShape]->Unhide();
+	//if (level == 0)
+		//shapes[pickedShape]->Unhide();
 
 	//TODO: Need to fix level 4,5 ?
-	//if (level == 0)
+	//if (level == 5)
 		//shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
@@ -216,8 +216,7 @@ void Game::Init()
 	shapeTransformation(xGlobalTranslate, 10);
 
 	shapes[1]->Hide();
-	
-	/*my code:*/
+
 	for (int i = 0; i < shapes.size(); i++)
 	{
 		if (shapes[i]->GetMode() == TRIANGLES)

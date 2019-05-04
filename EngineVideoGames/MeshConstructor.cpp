@@ -7,6 +7,8 @@
 #include "bezier2D.h"
 #include "obj_loader.h"
 
+#define NUM_OF_POINTS 1
+
 static void printMat(const glm::mat4 mat)
 {
 	std::cout << " matrix:" << std::endl;
@@ -184,6 +186,7 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 	glm::vec3 size = glm::abs(max - avg);
 
 	bvh.SetBoundingBox(glm::vec3(0, 0, 0), avg, size);
+	bvh.GetBox()->SetNumOfPoints(positions.size());
 
 	bvh.SetLeft(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, true, positions.size()));
 	bvh.SetRight(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, false, positions.size()));
@@ -191,27 +194,35 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 
 BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left, int num_of_points)
 {
-	BVH* bvh = new BVH();
-	glm::vec3 begin = parent->GetBegin();
-	glm::vec3 center = parent->GetFixedCenter();
-	glm::vec3 size = parent->GetSize();
-	int curr_cut = level % 3;
-	int sign = is_left ? 1 : -1;
+	//if (num_of_points >= NUM_OF_POINTS)
+	//{
+		BVH* bvh = new BVH();
+		glm::vec3 begin = parent->GetBegin();
+		glm::vec3 center = parent->GetFixedCenter();
+		glm::vec3 size = parent->GetSize();
+		int curr_cut = level % 3;
+		int sign = is_left ? -1 : 1;
 
-	//TODO: Need to fix level 4,5 and scale size ?
+		//TODO: Need to fix level 4,5 and scale size ?
 
-	begin[curr_cut] = parent->GetBegin()[curr_cut] + sign * parent->GetSize()[curr_cut];
-	center[curr_cut] = ((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
-	size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) - center[curr_cut]);
+		begin[curr_cut] = parent->GetBegin()[curr_cut] + sign * parent->GetSize()[curr_cut];
+		center[curr_cut] = ((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
+		//size[curr_cut] = glm::abs(parent->GetSize()[curr_cut] / 2.0f);
+		if (!is_left)
+			size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] + parent->GetSize()[curr_cut]) - center[curr_cut]);
+		else
+			size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] - center[curr_cut]) - (parent->GetFixedCenter()[curr_cut] - curr_node->data[curr_cut]));
 
-	bvh->SetBoundingBox(begin, center, size);
-	bvh->GetBox()->SetNumOfPoints(num_of_points);
+		bvh->SetBoundingBox(begin, center, size);
+		bvh->GetBox()->SetNumOfPoints(num_of_points);
 
-	if (curr_node->left != nullptr)
-		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true, num_of_points / 2));
-	if (curr_node->right != nullptr)
-		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2));
-	return bvh;
+		if (curr_node->left != nullptr)
+			bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true, num_of_points / 2));
+		if (curr_node->right != nullptr)
+			bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2));
+		return bvh;
+	//}
+	//return nullptr;
 }
 
 BVH* MeshConstructor::GetBVH()
@@ -246,31 +257,37 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 		other_curr = queue.back().second;
 		queue.pop_back();
 		
-		this_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
-		other_curr->GetBox()->UpdateDynamicVectors(other_trans, other_rot);
-		if (this_curr->GetBox()->CheckCollision(other_curr->GetBox()))
+		if (this_curr != nullptr && other_curr != nullptr)
 		{
-			if (this_curr->IsSmallestBox() && other_curr->IsSmallestBox())
+			this_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
+			other_curr->GetBox()->UpdateDynamicVectors(other_trans, other_rot);
+			if (this_curr->GetBox()->CheckCollision(other_curr->GetBox()))
 			{
-				return this_curr->GetBox();
-			}
-			//Pushes children boxes into queue
-			if (this_curr->IsSmallestBox() && other_curr != nullptr)
-			{
-				queue.emplace_back(this_curr, other_curr->GetLeft());
-				queue.emplace_back(this_curr, other_curr->GetRight());
-			}
-			else if (other_curr->IsSmallestBox() && this_curr != nullptr)
-			{
-				queue.emplace_back(other_curr->GetLeft(), other_curr);
-				queue.emplace_back(other_curr->GetRight(), other_curr);
-			}
-			else
-			{
-				queue.emplace_back(this_curr->GetLeft(), other_curr->GetLeft());
-				queue.emplace_back(this_curr->GetRight(), other_curr->GetLeft());
-				queue.emplace_back(this_curr->GetLeft(), other_curr->GetRight());
-				queue.emplace_back(this_curr->GetRight(), other_curr->GetRight());
+				if (this_curr->IsSmallestBox() && other_curr->IsSmallestBox())
+				{
+					std::cout << "this_level: " << this_curr->GetLevel() << std::endl;
+					std::cout << "other_curr: " << other_curr->GetLevel() << std::endl;
+					//if (this_curr->GetLevel() == 4)
+					return this_curr->GetBox();
+				}
+				//Pushes children boxes into queue
+				if (this_curr->IsSmallestBox() && other_curr != nullptr)
+				{
+					queue.emplace_back(this_curr, other_curr->GetLeft());
+					queue.emplace_back(this_curr, other_curr->GetRight());
+				}
+				else if (other_curr->IsSmallestBox() && this_curr != nullptr)
+				{
+					queue.emplace_back(other_curr->GetLeft(), other_curr);
+					queue.emplace_back(other_curr->GetRight(), other_curr);
+				}
+				else
+				{
+					queue.emplace_back(this_curr->GetLeft(), other_curr->GetLeft());
+					queue.emplace_back(this_curr->GetLeft(), other_curr->GetRight());
+					queue.emplace_back(this_curr->GetRight(), other_curr->GetLeft());
+					queue.emplace_back(this_curr->GetRight(), other_curr->GetRight());
+				}
 			}
 		}
 	}
