@@ -127,10 +127,10 @@ void Kdtree::_makeTree(Node* head, std::list<glm::vec4>& plist, int depth)
 		Node* left_node = new Node(k);
 		Node* right_node = new Node(k);
 		
-		Kdtree::_makeTree( left_node, left_list, depth+1);
+		Kdtree::_makeTree(left_node, left_list, depth+1);
 		if (!left_list.empty()) head->left = left_node;
 		
-		Kdtree::_makeTree( right_node, right_list, depth+1);
+		Kdtree::_makeTree(right_node, right_list, depth+1);
 		if (!right_list.empty()) head->right = right_node;
 	}
 } 

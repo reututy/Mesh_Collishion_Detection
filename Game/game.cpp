@@ -121,7 +121,7 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 		//shapes[pickedShape]->Unhide();
 
 	//TODO: Need to fix level 4,5 ?
-	//if (level == 5)
+	//if (level == 1)
 		//shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
@@ -205,7 +205,7 @@ void Game::Init()
 
 	//Scale and move the first (left) Octahedron
 	pickedShape = 2;
-	shapeTransformation(xGlobalTranslate, -10);
+	//shapeTransformation(xGlobalTranslate, -10);
 	//shapeTransformation(yScale, BB_SCALE);
 	//shapeTransformation(xScale, BB_SCALE);
 	//shapeTransformation(zScale, BB_SCALE);
@@ -213,7 +213,7 @@ void Game::Init()
 	//Scale and move the second (right) Octahedron
 	pickedShape = 3;
 	shapeTransformation(zLocalRotate, 30);
-	shapeTransformation(xGlobalTranslate, 10);
+	shapeTransformation(xGlobalTranslate, 5);
 
 	shapes[1]->Hide();
 
