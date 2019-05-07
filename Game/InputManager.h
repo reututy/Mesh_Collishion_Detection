@@ -8,7 +8,7 @@
 
 int curr_mode = 7;
 char modes_names[8][20] = {"POINTS", "LINES" , "LINE_STRIP", "LINE_LOOP", "TRIANGLES", "TRIANGLE_STRIP", "TRIANGLE_FAN", "QUADS" };
-
+extern bool cannot_move;
 
 void mouse_callback(GLFWwindow* window,int button, int action, int mods)
 {	
@@ -159,16 +159,20 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 					*/
 				break;
 				case GLFW_KEY_RIGHT:
-				scn->shapeTransformation(scn->xGlobalTranslate, 0.1f);
+					if(!cannot_move)
+						scn->shapeTransformation(scn->xGlobalTranslate, 0.1f);
 				break;
 			case GLFW_KEY_LEFT:
-				scn->shapeTransformation(scn->xGlobalTranslate, -0.1f);
+					if (!cannot_move)
+						scn->shapeTransformation(scn->xGlobalTranslate, -0.1f);
 				break;
 			case GLFW_KEY_UP:
-				scn->shapeTransformation(scn->yGlobalTranslate, 0.1f);
+					if (!cannot_move)
+						scn->shapeTransformation(scn->yGlobalTranslate, 0.1f);
 				break;
 			case GLFW_KEY_DOWN:
-				scn->shapeTransformation(scn->yGlobalTranslate, -0.1f);
+					if (!cannot_move)
+						scn->shapeTransformation(scn->yGlobalTranslate, -0.1f);
 				break;
 			case GLFW_KEY_M:
 				curr_mode = (curr_mode + 1) % NO_OF_MODES;

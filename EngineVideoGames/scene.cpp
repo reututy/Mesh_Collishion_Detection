@@ -516,9 +516,10 @@ void Scene::SetPickedShape(int value)
 }
 
 //Checks collision for each pair of shapes in scene and if collide, draw the appropriate bounding boxes.
-void Scene::CheckCollisionDetection()
+bool Scene::CheckCollisionDetection()
 {
 	int box_to_draw_index;
+	bool cannot_move = false;
 	for (Shape* shape1 : shapes)
 	{
 		if (shape1->GetMode() == TRIANGLES)
@@ -527,18 +528,16 @@ void Scene::CheckCollisionDetection()
 			{
 				if (shape2->GetMode() == TRIANGLES && shape1->GetNumOfShape() != shape2->GetNumOfShape())
 				{
-					//std::cout << std::endl;
-					//std::cout << "Checks collision: " << std::endl;
-					//std::cout << "shape1: " << shape1->GetNumOfShape() << std::endl;
-					//std::cout << "shape2: " << shape2->GetNumOfShape() << std::endl;
 					box_to_draw_index = shape1->CollisionDetection(shape2);
 					if (box_to_draw_index > -1)
 					{
 						std::cout << "Checks collision: They collide!" << std::endl;
 						shapes[box_to_draw_index]->Unhide();
+						cannot_move = true;
 					}
 				}
 			}
 		}
 	}
+	return cannot_move;
 }

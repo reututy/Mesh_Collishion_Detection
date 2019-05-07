@@ -8,6 +8,7 @@
 bool once = false;
 int num_of_curve = 1;
 int num_of_curve_two = 0;
+bool cannot_move = false;
 
 static void printMat(const glm::mat4 mat)
 {
@@ -39,16 +40,7 @@ Game::Game(glm::vec3 position, float angle, float hwRelation, float near, float 
 
 	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(4.0, 0.0, 0.0, 1.0), glm::vec4(4.0, 2.0, 0.0, 1.0),
 		glm::vec4(6.0, 2.0, 0.0, 1.0), glm::vec4(6.0, 0.0, 0.0, 1.0)));
-	/*
-	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(10.0, 0.0, 0.0, 1.0), glm::vec4(10.0, 2.0, 0.0, 1.0),
-		glm::vec4(12.0, 2.0, 0.0, 1.0), glm::vec4(12.0, 0.0, 0.0, 1.0)));
 
-	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(12.0, 0.0, 0.0, 1.0), glm::vec4(12.0, -2.0, 0.0, 1.0),
-		glm::vec4(14.0, -2.0, 0.0, 1.0), glm::vec4(14.0, 0.0, 0.0, 1.0)));
-
-	ctrlPointsVec_one.push_back(glm::mat4(glm::vec4(14.0, 0.0, 0.0, 1.0), glm::vec4(14.0, 2.0, 0.0, 1.0),
-		glm::vec4(16.0, 2.0, 0.0, 1.0), glm::vec4(16.0, 0.0, 0.0, 1.0)));
-		*/
 	curve = new Bezier1D(ctrlPointsVec_one);
 	MIN_CTRL = 3;
 	MAX_CTRL = 3;
@@ -106,13 +98,13 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	bvh->GetBox()->SetNumOfShape(pickedShape);
 	bvh->SetLevel(level);
 
+	shapeTransformation(xLocalTranslate, bvh->GetBox()->GetFixedCenter().x);
+	shapeTransformation(yLocalTranslate, bvh->GetBox()->GetFixedCenter().y);
+	shapeTransformation(zLocalTranslate, bvh->GetBox()->GetFixedCenter().z);
+
 	shapeTransformation(xScale, bvh->GetBox()->GetSize().x);
 	shapeTransformation(yScale, bvh->GetBox()->GetSize().y);
 	shapeTransformation(zScale, bvh->GetBox()->GetSize().z);
-
-	shapeTransformation(xLocalTranslate, 2 * bvh->GetBox()->GetFixedCenter().x);
-	shapeTransformation(yLocalTranslate, 2 * bvh->GetBox()->GetFixedCenter().y);
-	shapeTransformation(zLocalTranslate, 2 * bvh->GetBox()->GetFixedCenter().z);
 
 	//Hides all the shapes unless the large boxes
 	shapes[pickedShape]->Hide();
@@ -121,7 +113,7 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 		//shapes[pickedShape]->Unhide();
 
 	//TODO: Need to fix level 4,5 ?
-	//if (level == 1)
+	//if (level == 2)
 		//shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
@@ -183,6 +175,60 @@ void Game::Init()
 	pickedShape = -1;
 	*/
 
+	
+	/* The code with the 2 toruses:*/
+	/*
+	addShape(Axis, -1, LINES); //0 Axis
+	SetNumOfShape();
+	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
+	SetNumOfShape();
+	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//2 left ball
+	//addShape(Octahedron, -1, TRIANGLES); //2 left Octahedron
+	SetNumOfShape();
+	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//3 right ball
+	//addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
+	//addShapeCopy(2, -1, TRIANGLES);
+	SetNumOfShape();
+
+	//translate all scene away from camera
+	myTranslate(glm::vec3(0, 0, -100), 0);
+
+	//Scale the Axis:
+	pickedShape = 0;
+	shapeTransformation(yScale, 100);
+	shapeTransformation(xScale, 100);
+	shapeTransformation(zScale, 100);
+
+	//ReadPixel();
+
+	//Scale and move the first (left) Octahedron
+	pickedShape = 2;
+	//shapeTransformation(xGlobalTranslate, -10);
+	//shapeTransformation(yScale, BB_SCALE);
+	//shapeTransformation(xScale, BB_SCALE);
+	//shapeTransformation(zScale, BB_SCALE);
+
+	//Scale and move the second (right) Octahedron
+	pickedShape = 3;
+	//shapeTransformation(zLocalRotate, 30);
+	shapeTransformation(yGlobalTranslate, 50);
+
+	shapes[1]->Hide();
+
+	for (int i = 0; i < shapes.size(); i++)
+	{
+		if (shapes[i]->GetMode() == TRIANGLES)
+		{
+			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
+		}
+	}
+
+	//pickedShape = -1;
+	//Activate();
+	*/
+
+	/* The code with the 2 Octahedrons:*/
+	
 	addShape(Axis,-1,LINES); //0 Axis
 	SetNumOfShape();
 	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
@@ -245,7 +291,7 @@ void Game::Init()
 
 	pickedShape = -1;
 	//Activate();
-
+	
 }
 
 int Game::CreateCurveControlPoints(int counter, Bezier1D *curve)
@@ -293,7 +339,7 @@ void Game::Update(const glm::mat4 &MVP, const glm::mat4 &Normal, Shader *s)
 	s->SetUniformMat4f("Normal", Normal);
 	s->SetUniform4f("lightDirection", 0.0f, 0.0f, -1.0f, 1.0f);
 	s->SetUniform4f("lightColor", r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
-	CheckCollisionDetection();
+	cannot_move = CheckCollisionDetection();
 }
 
 void Game::WhenRotate()

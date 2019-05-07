@@ -7,6 +7,8 @@
 #include "bezier2D.h"
 #include "obj_loader.h"
 
+#define MINIMUM_VERTCIES_FOR_BVH 1
+
 static void printMat(const glm::mat4 mat)
 {
 	std::cout << " matrix:" << std::endl;
@@ -97,10 +99,11 @@ void MeshConstructor::InitLine(IndexedModel &model){
 	is2D = false;
 }
 
-void MeshConstructor::InitMesh(IndexedModel &model){
-
+void MeshConstructor::InitMesh(IndexedModel &model)
+{
 	CreateTree(model.positions);
 	positions = model.positions;
+
 	int verticesNum = model.positions.size();
 	indicesNum = model.indices.size();
 	
@@ -165,7 +168,7 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 	for (int i = 0; i < positions.size(); i++)
 		points.push_back(glm::vec4(positions.at(i), 1));
 	kdtree.makeTree(points);
-	kdtree.printTree(kdtree.getRoot());
+	//kdtree.printTree(kdtree.getRoot());
 
 	glm::vec3 sum = glm::vec3(0);
 	glm::vec3 max = glm::vec3(0);
@@ -203,7 +206,7 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	BVH* bvh = new BVH();
 	glm::vec3 begin = parent->GetBegin();
 	glm::vec3 center = parent->GetFixedCenter();
-	glm::vec3 size = parent->GetSize();
+	glm::vec3 size = glm::vec3(0);
 	int curr_cut = level % 3;
 	int sign = is_left ? -1 : 1;
 
@@ -212,6 +215,22 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	glm::vec3 sum = glm::vec3(0);
 	glm::vec3 max = glm::vec3(0);
 
+	/* A try: Half of the size - does not work*/
+	/*
+	std::list<glm::vec4> *points_to_check = is_left ? &left : &right;
+
+	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
+	{
+		sum.x += (*it).x;
+		sum.y += (*it).y;
+		sum.z += (*it).z;
+	}
+	center = (1.0f / points_to_check->size()) * sum;
+	size[curr_cut] = parent->GetSize()[curr_cut] / 2.0f;
+	*/
+
+	/* Works partly: */
+	
 	glm::vec3 min_point_x = parent->GetSize();
 	glm::vec3 max_point_x = glm::vec3(0);
 	glm::vec3 min_point_y = parent->GetSize();
@@ -219,7 +238,7 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	glm::vec3 min_point_z = parent->GetSize();
 	glm::vec3 max_point_z = glm::vec3(0);
 	std::list<glm::vec4> *points_to_check = is_left ? &left : &right;
-	
+
 	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
 	{
 		sum.x += (*it).x;
@@ -247,34 +266,39 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	size.z = glm::abs(max_point_x.z - min_point_x.z) / 2.0f;
 	
 
+	/* Almog - what should be:*/
 	/*
+	glm::vec3 sum = glm::vec3(0);
+	glm::vec3 max = glm::vec3(0);
+
+	std::list<glm::vec4> *points_to_check = is_left ? &left : &right;
+
+	
 	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
 	{
 		sum.x += (*it).x;
 		sum.y += (*it).y;
 		sum.z += (*it).z;
-		if ((*it).x > max.x)
-			max.x = (*it).x;
-		if ((*it).y > max.y)
-			max.y = (*it).y;
-		if ((*it).z > max.z)
-			max.z = (*it).z;
 	}
 	center = (1.0f / points_to_check->size()) * sum;
-	size[curr_cut] = glm::abs(max[curr_cut] - center[curr_cut]);
-	*/
+
+	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
+	{
+		size = glm::max(size, glm::abs(glm::vec3(*it) - center));
+	}*/
 
 	bvh->SetBoundingBox(begin, center, size);
 	bvh->GetBox()->SetNumOfPoints(num_of_points);
 
 	std::list<glm::vec4> left_list;
 	std::list<glm::vec4> right_list;
-	kdtree.findMedian(curr_cut, left, left_list, right_list);		
-	kdtree.findMedian(curr_cut, right, left_list, right_list);	
 
-	if (curr_node->left != nullptr)
+	kdtree.findMedian(curr_cut, left, left_list, right_list);
+	kdtree.findMedian(curr_cut, right, left_list, right_list);
+
+	if (curr_node->left != nullptr && num_of_points >= MINIMUM_VERTCIES_FOR_BVH)
 		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true, num_of_points / 2, left_list, right_list));
-	if (curr_node->right != nullptr)
+	if (curr_node->right != nullptr && num_of_points >= MINIMUM_VERTCIES_FOR_BVH)
 		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2, left_list, right_list));
 	return bvh;
 }
