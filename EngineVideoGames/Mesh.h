@@ -80,7 +80,6 @@ class BoundingBox
 private:
 	int num_of_shape;
 	int num_of_points;
-	glm::vec3 begin;     // begin coordinates
 	glm::vec3 center;     // center coordinates
 	glm::vec3 size;       // distance between the center of the box to its side in each dimension 
 	glm::vec3 xInit;      // x axis of the box. default value (1,0,0)		  
@@ -96,19 +95,18 @@ private:
 
 public:
 	BoundingBox();
-	BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
+	BoundingBox(glm::vec3 center, glm::vec3 size);
 	~BoundingBox();
 	bool CheckCollision(BoundingBox* other);
 	void UpdateDynamicVectors(glm::mat4 translate, glm::mat4 rotate);
 
 	bool IsSmallestBox();
-	void SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size);
+	void SetBoundingBox(glm::vec3 center, glm::vec3 size);
 	void SetNumOfShape(int value);
 	void SetNumOfPoints(int value);
 
 	int GetNumOfShape();
 	int GetNumOfPoints();
-	glm::vec3 GetBegin();
 	glm::vec3 GetCenter();
 	glm::vec3 GetSize();
 	glm::vec3 GetxInit();

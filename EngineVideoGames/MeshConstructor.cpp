@@ -7,7 +7,7 @@
 #include "bezier2D.h"
 #include "obj_loader.h"
 
-#define MINIMUM_VERTCIES_FOR_BVH 1
+#define MINIMUM_VERTCIES_FOR_BVH 700
 
 static void printMat(const glm::mat4 mat)
 {
@@ -161,7 +161,6 @@ void MeshConstructor::CopyMesh(const MeshConstructor &mesh){
 	
 }
 
-
 void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 {
 	std::list<glm::vec4> points;
@@ -170,50 +169,89 @@ void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
 	kdtree.makeTree(points);
 	//kdtree.printTree(kdtree.getRoot());
 
-	glm::vec3 sum = glm::vec3(0);
-	glm::vec3 max = glm::vec3(0);
-	glm::vec3 center = glm::vec3(0);
-	glm::vec3 size = glm::vec3(0);
-	for (std::list<glm::vec4>::iterator it = points.begin(); it != points.end(); it++)
-	{
-		sum.x += (*it).x;
-		sum.y += (*it).y;
-		sum.z += (*it).z;
-		if ((*it).x > max.x)
-			max.x = (*it).x;
-		if ((*it).y > max.y)
-			max.y = (*it).y;
-		if ((*it).z > max.z)
-			max.z = (*it).z;
-	}
-	center = (1.0f / positions.size()) * sum;
-	size = glm::abs(max - center);
-
-	bvh.SetBoundingBox(glm::vec3(0, 0, 0), center, size);
-	bvh.GetBox()->SetNumOfPoints(positions.size());
-
-	std::list<glm::vec4> left_list;
-	std::list<glm::vec4> right_list;
-	kdtree.findMedian(0, points, left_list, right_list);
-
-	bvh.SetLeft(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, true, positions.size(), left_list, right_list));
-	bvh.SetRight(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, false, positions.size(), left_list, right_list));
+	this->bvh = *CreateBVH(positions, kdtree.getRoot(), 0);
 }
 
+BVH* MeshConstructor::CreateBVH(std::vector<glm::vec3> points, Node* curr_node, int level)
+{
+	BVH* bvh = new BVH();
+	int curr_cut = level % 3;
+	glm::vec3 center = glm::vec3(0);
+	glm::vec3 size = glm::vec3(0);
+	glm::vec3 sum = glm::vec3(0);
+	glm::vec3 max = glm::vec3(0);
+
+	//Calculates the center of the box:
+	for (int i = 0; i < points.size(); i++)
+		sum += points[i];
+	center = (1.0f / points.size()) * sum;
+	//Calculates the size of the box:
+	for (int i = 0; i < points.size(); i++)
+		size = glm::max(size, glm::abs(points[i] - center));
+	
+	bvh->SetBoundingBox(center, size);
+	bvh->GetBox()->SetNumOfPoints(points.size());
+
+	std::vector<glm::vec3> new_points;
+	if (level == 5)
+	{
+		int hjhjgkjgcjlh=1;
+	}
+	if (level == 4)
+	{
+		int hjhjgkjgcjlh = 1;
+	}
+	if (curr_node->left != nullptr && points.size() >= MINIMUM_VERTCIES_FOR_BVH)
+	{
+		for (int i = 0; i < points.size(); i++)
+		{
+			if (curr_node->data[curr_cut] < points[i][curr_cut])
+			{
+				new_points.push_back(points[i]);
+			}
+		}
+		bvh->SetLeft(CreateBVH(new_points, curr_node->left, level + 1));
+	}
+	new_points.clear();
+	if (curr_node->right != nullptr && points.size() >= MINIMUM_VERTCIES_FOR_BVH)
+	{
+		for (int i = 0; i < points.size(); i++)
+		{
+			if (curr_node->data[curr_cut] >= points[i][curr_cut])
+			{
+				new_points.push_back(points[i]);
+			}
+		}
+		bvh->SetRight(CreateBVH(new_points, curr_node->right, level + 1));
+	}
+	return bvh;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left, int num_of_points, 
 								std::list<glm::vec4> &left, std::list<glm::vec4> &right)
 {
 	BVH* bvh = new BVH();
-	glm::vec3 begin = parent->GetBegin();
 	glm::vec3 center = parent->GetFixedCenter();
 	glm::vec3 size = glm::vec3(0);
 	int curr_cut = level % 3;
 	int sign = is_left ? -1 : 1;
 
-	begin[curr_cut] = parent->GetBegin()[curr_cut] + sign * parent->GetSize()[curr_cut];
 
 	glm::vec3 sum = glm::vec3(0);
 	glm::vec3 max = glm::vec3(0);
+	*/
 
 	/* A try: Half of the size - does not work*/
 	/*
@@ -230,7 +268,7 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	*/
 
 	/* Works partly: */
-	
+	/*
 	glm::vec3 min_point_x = parent->GetSize();
 	glm::vec3 max_point_x = glm::vec3(0);
 	glm::vec3 min_point_y = parent->GetSize();
@@ -264,7 +302,7 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	size.x = glm::abs(max_point_x.x - min_point_x.x) / 2.0f;
 	size.y = glm::abs(max_point_x.y - min_point_x.y) / 2.0f;
 	size.z = glm::abs(max_point_x.z - min_point_x.z) / 2.0f;
-	
+	*/
 
 	/* Almog - what should be:*/
 	/*
@@ -272,7 +310,6 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	glm::vec3 max = glm::vec3(0);
 
 	std::list<glm::vec4> *points_to_check = is_left ? &left : &right;
-
 	
 	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
 	{
@@ -285,11 +322,12 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
 	{
 		size = glm::max(size, glm::abs(glm::vec3(*it) - center));
-	}*/
+	}
 
 	bvh->SetBoundingBox(begin, center, size);
 	bvh->GetBox()->SetNumOfPoints(num_of_points);
 
+	
 	std::list<glm::vec4> left_list;
 	std::list<glm::vec4> right_list;
 
@@ -301,72 +339,12 @@ BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level,
 	if (curr_node->right != nullptr && num_of_points >= MINIMUM_VERTCIES_FOR_BVH)
 		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2, left_list, right_list));
 	return bvh;
-}
-
-
-
-/* The 'working code': */
-/*
-void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
-{
-	std::list<glm::vec4> points;
-	for (int i = 0; i < positions.size(); i++)
-		points.push_back(glm::vec4(positions.at(i), 1));
-	kdtree.makeTree(points);
-	kdtree.printTree(kdtree.getRoot());
-
-	glm::vec3 sum = glm::vec3(0);
-	glm::vec3 max = glm::vec3(0);
-	for (std::list<glm::vec4>::iterator it = points.begin(); it != points.end(); it++)
-	{
-		sum.x += (*it).x;
-		sum.y += (*it).y;
-		sum.z += (*it).z;
-		if ((*it).x > max.x)
-			max.x = (*it).x;
-		if ((*it).y > max.y)
-			max.y = (*it).y;
-		if ((*it).z > max.z)
-			max.z = (*it).z;
-	}
-	glm::vec3 avg = (1.0f / positions.size()) * sum;
-	glm::vec3 size = glm::abs(max - avg);
-
-	bvh.SetBoundingBox(glm::vec3(0, 0, 0), avg, size);
-	bvh.GetBox()->SetNumOfPoints(positions.size());
-
-	bvh.SetLeft(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, true, positions.size()));
-	bvh.SetRight(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, false, positions.size()));
-}
-
-BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left, int num_of_points)
-{
-	BVH* bvh = new BVH();
-	glm::vec3 begin = parent->GetBegin();
-	glm::vec3 center = parent->GetFixedCenter();
-	glm::vec3 size = parent->GetSize();
-	int curr_cut = level % 3;
-	int sign = is_left ? -1 : 1;
-
-	//TODO: Need to fix level 4,5 and scale size ?
-
-	begin[curr_cut] = parent->GetBegin()[curr_cut] + sign * parent->GetSize()[curr_cut];
-	center[curr_cut] = ((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
-	//size[curr_cut] = glm::abs(parent->GetSize()[curr_cut] / 2.0f);
-	if (!is_left)
-		size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] + parent->GetSize()[curr_cut]) - center[curr_cut]);
-	else
-		size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] - center[curr_cut]) - (parent->GetFixedCenter()[curr_cut] - curr_node->data[curr_cut]));
-
-	bvh->SetBoundingBox(begin, center, size);
-	bvh->GetBox()->SetNumOfPoints(num_of_points);
-
-	if (curr_node->left != nullptr)
-		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true, num_of_points / 2));
-	if (curr_node->right != nullptr)
-		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2));
-	return bvh;
 }*/
+
+
+
+
+
 
 BVH* MeshConstructor::GetBVH()
 {
@@ -437,3 +415,64 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 	return nullptr;
 }
 
+/* The 'working code': */
+/*
+void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
+{
+	std::list<glm::vec4> points;
+	for (int i = 0; i < positions.size(); i++)
+		points.push_back(glm::vec4(positions.at(i), 1));
+	kdtree.makeTree(points);
+	kdtree.printTree(kdtree.getRoot());
+
+	glm::vec3 sum = glm::vec3(0);
+	glm::vec3 max = glm::vec3(0);
+	for (std::list<glm::vec4>::iterator it = points.begin(); it != points.end(); it++)
+	{
+		sum.x += (*it).x;
+		sum.y += (*it).y;
+		sum.z += (*it).z;
+		if ((*it).x > max.x)
+			max.x = (*it).x;
+		if ((*it).y > max.y)
+			max.y = (*it).y;
+		if ((*it).z > max.z)
+			max.z = (*it).z;
+	}
+	glm::vec3 avg = (1.0f / positions.size()) * sum;
+	glm::vec3 size = glm::abs(max - avg);
+
+	bvh.SetBoundingBox(avg, size);
+	bvh.GetBox()->SetNumOfPoints(positions.size());
+
+	bvh.SetLeft(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, true, positions.size()));
+	bvh.SetRight(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, false, positions.size()));
+}
+
+BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left, int num_of_points)
+{
+	BVH* bvh = new BVH();
+	glm::vec3 center = parent->GetFixedCenter();
+	glm::vec3 size = parent->GetSize();
+	int curr_cut = level % 3;
+	int sign = is_left ? -1 : 1;
+
+	//TODO: Need to fix level 4,5 and scale size ?
+
+	center[curr_cut] = ((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
+	//size[curr_cut] = glm::abs(parent->GetSize()[curr_cut] / 2.0f);
+	if (!is_left)
+		size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] + parent->GetSize()[curr_cut]) - center[curr_cut]);
+	else
+		size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] - center[curr_cut]) - (parent->GetFixedCenter()[curr_cut] - curr_node->data[curr_cut]));
+
+	bvh->SetBoundingBox(center, size);
+	bvh->GetBox()->SetNumOfPoints(num_of_points);
+
+	if (curr_node->left != nullptr)
+		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true, num_of_points / 2));
+	if (curr_node->right != nullptr)
+		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2));
+	return bvh;
+}
+*/

@@ -34,12 +34,12 @@ bool BVH::IsSmallestBox()
 	return is;
 }
 
-void BVH::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
+void BVH::SetBoundingBox(glm::vec3 center, glm::vec3 size)
 {
 	if (box == nullptr)
-		box = new BoundingBox(begin, center, size);
+		box = new BoundingBox(center, size);
 	else 
-		box->SetBoundingBox(begin, center, size);
+		box->SetBoundingBox(center, size);
 }
 
 void BVH::SetLeft(BVH* bvh)

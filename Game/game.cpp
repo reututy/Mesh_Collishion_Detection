@@ -108,13 +108,13 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 
 	//Hides all the shapes unless the large boxes
 	shapes[pickedShape]->Hide();
-	chainParents[pickedShape] = parent;
+	//chainParents[pickedShape] = parent;
 	//if (level == 0)
 		//shapes[pickedShape]->Unhide();
 
 	//TODO: Need to fix level 4,5 ?
-	//if (level == 2)
-		//shapes[pickedShape]->Unhide();
+	if (level == 5)
+		shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
 	if (bvh->GetRight() != nullptr)
@@ -177,7 +177,7 @@ void Game::Init()
 
 	
 	/* The code with the 2 toruses:*/
-	/*
+	
 	addShape(Axis, -1, LINES); //0 Axis
 	SetNumOfShape();
 	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
@@ -185,10 +185,10 @@ void Game::Init()
 	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//2 left ball
 	//addShape(Octahedron, -1, TRIANGLES); //2 left Octahedron
 	SetNumOfShape();
-	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//3 right ball
+	//addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//3 right ball
 	//addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
 	//addShapeCopy(2, -1, TRIANGLES);
-	SetNumOfShape();
+	//SetNumOfShape();
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0, 0, -100), 0);
@@ -209,9 +209,9 @@ void Game::Init()
 	//shapeTransformation(zScale, BB_SCALE);
 
 	//Scale and move the second (right) Octahedron
-	pickedShape = 3;
+	//pickedShape = 3;
 	//shapeTransformation(zLocalRotate, 30);
-	shapeTransformation(yGlobalTranslate, 50);
+	//shapeTransformation(yGlobalTranslate, 50);
 
 	shapes[1]->Hide();
 
@@ -223,20 +223,20 @@ void Game::Init()
 		}
 	}
 
-	//pickedShape = -1;
+	pickedShape = -1;
 	//Activate();
-	*/
+	
 
 	/* The code with the 2 Octahedrons:*/
-	
+	/*
 	addShape(Axis,-1,LINES); //0 Axis
 	SetNumOfShape();
 	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
 	SetNumOfShape();
 	addShape(Octahedron,-1,TRIANGLES); //2 left Octahedron
 	SetNumOfShape();
-	addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
-	SetNumOfShape();
+	//addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
+	//SetNumOfShape();
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0,0,-20),0);
@@ -257,9 +257,9 @@ void Game::Init()
 	//shapeTransformation(zScale, BB_SCALE);
 
 	//Scale and move the second (right) Octahedron
-	pickedShape = 3;
-	shapeTransformation(zLocalRotate, 30);
-	shapeTransformation(xGlobalTranslate, 5);
+	//pickedShape = 3;
+	//shapeTransformation(zLocalRotate, 30);
+	//shapeTransformation(xGlobalTranslate, 5);
 
 	shapes[1]->Hide();
 
@@ -289,7 +289,7 @@ void Game::Init()
 	shapeTransformation(xScale, BB_SCALE / 2);
 	*/
 
-	pickedShape = -1;
+	//pickedShape = -1;
 	//Activate();
 	
 }
@@ -339,7 +339,7 @@ void Game::Update(const glm::mat4 &MVP, const glm::mat4 &Normal, Shader *s)
 	s->SetUniformMat4f("Normal", Normal);
 	s->SetUniform4f("lightDirection", 0.0f, 0.0f, -1.0f, 1.0f);
 	s->SetUniform4f("lightColor", r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
-	cannot_move = CheckCollisionDetection();
+	//cannot_move = CheckCollisionDetection();
 }
 
 void Game::WhenRotate()

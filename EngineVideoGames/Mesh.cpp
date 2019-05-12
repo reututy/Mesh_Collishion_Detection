@@ -5,7 +5,7 @@
 #define GREEN glm::vec3(0, 1, 0)
 #define RED glm::vec3(1, 0, 0)
 
-#define NUM_OF_POINTS 12
+#define NUM_OF_POINTS 1500
 
 void IndexedModel::CalcNormals()
 {
@@ -247,7 +247,6 @@ IndexedModel OctahedronGenerator()
 
 BoundingBox::BoundingBox()
 {
-	begin = glm::vec3(0, 0, 0);     // begin coordinates
 	center = glm::vec3(0, 0, 0);     // center coordinates
 	size = glm::vec3(0, 0, 0);       // distance between the center of the box to its side in each dimension 
 	xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
@@ -263,9 +262,8 @@ BoundingBox::BoundingBox()
 	num_of_shape = 0;
 }
 
-BoundingBox::BoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
+BoundingBox::BoundingBox(glm::vec3 center, glm::vec3 size)
 {
-	this->begin = begin;
 	this->center = center;
 	this->size = size;
 	this->xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		
@@ -399,9 +397,8 @@ bool BoundingBox::IsSmallestBox()
 	return num_of_points <= NUM_OF_POINTS;
 }
 
-void BoundingBox::SetBoundingBox(glm::vec3 begin, glm::vec3 center, glm::vec3 size)
+void BoundingBox::SetBoundingBox(glm::vec3 center, glm::vec3 size)
 {
-	this->begin = begin;
 	this->center = center;
 	this->size = size;
 	xInit = glm::vec3(1, 0, 0);      // x axis of the box. default value (1,0,0)		  
@@ -433,11 +430,6 @@ int BoundingBox::GetNumOfShape()
 int BoundingBox::GetNumOfPoints()
 {
 	return num_of_points;
-}
-
-glm::vec3 BoundingBox::GetBegin()
-{
-	return begin;
 }
 
 glm::vec3 BoundingBox::GetCenter()
