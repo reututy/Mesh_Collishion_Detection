@@ -219,7 +219,6 @@ void Game::Init()
 	pickedShape = -1;
 	Activate();
 
-
 	/* The code with the 2 Octahedrons:*/
 	/*
 	addShape(Axis,-1,LINES); //0 Axis
