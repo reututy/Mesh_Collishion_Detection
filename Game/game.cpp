@@ -109,11 +109,11 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 	//Hides all the shapes unless the large boxes
 	shapes[pickedShape]->Hide();
 	chainParents[pickedShape] = parent;
-	//if (level == 0)
-		//shapes[pickedShape]->Unhide();
-
-	if (level == 9)
+	if (level == 0)
 		shapes[pickedShape]->Unhide();
+
+	//if (level == 8)
+		//shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
 	if (bvh->GetRight() != nullptr)
@@ -182,10 +182,10 @@ void Game::Init()
 	SetNumOfShape();
 	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
 	SetNumOfShape();
-	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//2 left ball
+	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//2 down ball
 	SetNumOfShape();
-	//addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//3 right ball
-	//SetNumOfShape();
+	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//3 up ball
+	SetNumOfShape();
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0, 0, -100), 0);
@@ -196,14 +196,16 @@ void Game::Init()
 	shapeTransformation(xScale, 100);
 	shapeTransformation(zScale, 100);
 
-	//Scale and move the first (left) Octahedron:
-	//pickedShape = 2;
+	//ReadPixel();
 
-	//Scale and move the second (right) Octahedron:
-	//pickedShape = 3;
-	//shapeTransformation(zLocalRotate, 30);
-	//shapeTransformation(yGlobalTranslate, 50);
+	//Scale and move the first (down) Octahedron:
+	pickedShape = 2;
+	shapeTransformation(zLocalRotate, 45);
 
+	//Scale and move the second (up) Octahedron:
+	pickedShape = 3;
+	shapeTransformation(yGlobalTranslate, 50);
+	
 	shapes[1]->Hide();
 
 	for (int i = 0; i < shapes.size(); i++)
@@ -214,11 +216,9 @@ void Game::Init()
 		}
 	}
 
-	//ReadPixel();
-
 	pickedShape = -1;
 	//Activate();
-	
+
 
 	/* The code with the 2 Octahedrons:*/
 	/*
@@ -228,8 +228,8 @@ void Game::Init()
 	SetNumOfShape();
 	addShape(Octahedron,-1,TRIANGLES); //2 left Octahedron
 	SetNumOfShape();
-	//addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
-	//SetNumOfShape();
+	addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
+	SetNumOfShape();
 
 	//translate all scene away from camera
 	myTranslate(glm::vec3(0,0,-20),0);
@@ -250,9 +250,9 @@ void Game::Init()
 	//shapeTransformation(zScale, BB_SCALE);
 
 	//Scale and move the second (right) Octahedron
-	//pickedShape = 3;
-	//shapeTransformation(zLocalRotate, 30);
-	//shapeTransformation(xGlobalTranslate, 5);
+	pickedShape = 3;
+	shapeTransformation(zLocalRotate, 30);
+	shapeTransformation(xGlobalTranslate, 5);
 
 	shapes[1]->Hide();
 
@@ -264,26 +264,9 @@ void Game::Init()
 		}
 	}
 	
-	/*
-	addShapeCopy(3, -1, LINE_LOOP); //5 Cube belong to 2
-	pickedShape = 5;
-	shapeTransformation(xGlobalTranslate, 2);
-	//shapeTransformation(xGlobalTranslate, kd.getRoot()->left->data.x);
-	shapeTransformation(zScale, BB_SCALE);
-	shapeTransformation(yScale, BB_SCALE);
-	shapeTransformation(xScale, BB_SCALE / 2);
-	
-	addShapeCopy(3, -1, LINE_LOOP); //6 Cube belong to 2
-	pickedShape = 6;
-	shapeTransformation(xGlobalTranslate, -2);
-	//shapeTransformation(xGlobalTranslate, kd.getRoot()->right->data.x*2);
-	shapeTransformation(zScale, BB_SCALE);
-	shapeTransformation(yScale, BB_SCALE);
-	shapeTransformation(xScale, BB_SCALE / 2);
-	*/
-
-	//pickedShape = -1;
+	pickedShape = -1;
 	//Activate();
+	*/
 	
 }
 

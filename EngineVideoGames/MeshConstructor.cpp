@@ -7,7 +7,7 @@
 #include "bezier2D.h"
 #include "obj_loader.h"
 
-#define MINIMUM_VERTCIES_FOR_BVH 50
+#define MINIMUM_VERTCIES_FOR_BVH 100
 
 static void printMat(const glm::mat4 mat)
 {
@@ -229,8 +229,9 @@ int MeshConstructor::GeyType()
 
 /* The 'Working' CheckCollision - Mine */
 // Checks collision between two bvh using BB CheckCollision
+
 BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
-	glm::mat4 other_trans, glm::mat4 other_rot)
+																		 glm::mat4 other_trans, glm::mat4 other_rot)
 {
 	//First Checks if the big boxes collides:
 	std::vector<std::pair<BVH*, BVH*>> queue;
@@ -252,9 +253,9 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 			{
 				if (this_curr->IsSmallestBox() && other_curr->IsSmallestBox())
 				{
-					std::cout << "this_level: " << this_curr->GetLevel() << std::endl;
-					std::cout << "other_curr: " << other_curr->GetLevel() << std::endl;
-					//if (this_curr->GetLevel() == 4)
+					//std::cout << "this_level: " << this_curr->GetLevel() << std::endl;
+					//std::cout << "other_curr: " << other_curr->GetLevel() << std::endl;
+					//std::cout << "They collide! " << std::endl;
 					return this_curr->GetBox();
 				}
 				//Pushes children boxes into queue
@@ -265,8 +266,8 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 				}
 				else if (other_curr->IsSmallestBox() && this_curr != nullptr)
 				{
-					queue.emplace_back(other_curr->GetLeft(), other_curr);
-					queue.emplace_back(other_curr->GetRight(), other_curr);
+					queue.emplace_back(this_curr->GetLeft(), other_curr);
+					queue.emplace_back(this_curr->GetRight(), other_curr);
 				}
 				else
 				{
@@ -280,6 +281,7 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 	}
 	return nullptr;
 }
+
 
 /* Almog's code */
 // Checks collision between two bvh using BB CheckCollision
@@ -295,8 +297,8 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 		counter++;
 		self_curr = self_queue.front();
 		self_queue.pop();
-		other->GetBVH()->GetBox()->UpdateDynamicVectors(other_rot, other_trans);
-		self_curr->GetBox()->UpdateDynamicVectors(this_rot, this_trans);
+		other->GetBVH()->GetBox()->UpdateDynamicVectors(other_trans, other_rot);
+		self_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
 		if (self_curr->GetBox()->CheckCollision(other->GetBVH()->GetBox()))
 		{
 			//if(counter>=100)

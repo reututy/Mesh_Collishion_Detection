@@ -531,7 +531,6 @@ bool Scene::CheckCollisionDetection()
 					box_to_draw_index = shape1->CollisionDetection(shape2);
 					if (box_to_draw_index > -1)
 					{
-						std::cout << "Checks collision: They collide!" << std::endl;
 						shapes[box_to_draw_index]->Unhide();
 						cannot_move = true;
 					}

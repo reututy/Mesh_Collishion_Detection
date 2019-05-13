@@ -159,20 +159,28 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 					*/
 				break;
 				case GLFW_KEY_RIGHT:
-					if(!cannot_move)
+					if (!cannot_move)
 						scn->shapeTransformation(scn->xGlobalTranslate, 0.1f);
+					else
+						scn->Deactivate();
 				break;
 			case GLFW_KEY_LEFT:
 					if (!cannot_move)
 						scn->shapeTransformation(scn->xGlobalTranslate, -0.1f);
+					else
+						scn->Deactivate();
 				break;
 			case GLFW_KEY_UP:
 					if (!cannot_move)
 						scn->shapeTransformation(scn->yGlobalTranslate, 0.1f);
+					else
+						scn->Deactivate();
 				break;
 			case GLFW_KEY_DOWN:
 					if (!cannot_move)
 						scn->shapeTransformation(scn->yGlobalTranslate, -0.1f);
+					else
+						scn->Deactivate();
 				break;
 			case GLFW_KEY_M:
 				curr_mode = (curr_mode + 1) % NO_OF_MODES;
@@ -187,16 +195,28 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 				*/
 				break;
 			case GLFW_KEY_D:
-				scn->shapeTransformation(scn->zLocalRotate, -5.f);
+				if (!cannot_move)
+					scn->shapeTransformation(scn->zLocalRotate, -5.f);
+				else
+					scn->Deactivate();
 				break;
 			case GLFW_KEY_A:
-				scn->shapeTransformation(scn->zLocalRotate, 5.f);
+				if (!cannot_move)
+					scn->shapeTransformation(scn->zLocalRotate, 5.f);
+				else
+					scn->Deactivate();
 				break;
 			case GLFW_KEY_W:
-				scn->shapeTransformation(scn->xGlobalRotate, -5.f);
+				if (!cannot_move)
+					scn->shapeTransformation(scn->xGlobalRotate, -5.f);
+				else
+					scn->Deactivate();
 				break;
 			case GLFW_KEY_S:
-				scn->shapeTransformation(scn->xLocalRotate, 5.f);
+				if (!cannot_move)
+					scn->shapeTransformation(scn->xLocalRotate, 5.f);
+				else
+					scn->Deactivate();
 				break;
 			default:
 				break;

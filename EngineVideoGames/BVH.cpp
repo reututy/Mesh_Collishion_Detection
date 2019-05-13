@@ -29,8 +29,6 @@ bool BVH::IsLeaf()
 bool BVH::IsSmallestBox()
 {
 	bool is = box->IsSmallestBox();
-	//bool is = IsLeaf() && box->IsSmallestBox();
-	//bool is = !IsLeaf() && (left == nullptr || left->IsLeaf()) && (right == nullptr || right->IsLeaf());
 	return is;
 }
 
