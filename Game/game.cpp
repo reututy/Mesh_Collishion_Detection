@@ -215,7 +215,6 @@ void Game::Init()
 			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
 		}
 	}
-
 	pickedShape = -1;
 	Activate();
 
