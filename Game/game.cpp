@@ -217,7 +217,7 @@ void Game::Init()
 	}
 
 	pickedShape = -1;
-	//Activate();
+	Activate();
 
 
 	/* The code with the 2 Octahedrons:*/
@@ -348,7 +348,7 @@ void Game::Motion()
 	if (isActive)
 	{
 		int p = pickedShape;
-		pickedShape = 2;
+		pickedShape = 3;
 		shapeTransformation(zLocalRotate, 0.45);
 		pickedShape = p;
 	}

@@ -187,10 +187,6 @@ BVH* MeshConstructor::CreateBVH(std::vector<glm::vec3> points, Node* curr_node, 
 	bvh->GetBox()->SetNumOfPoints(points.size());
 
 	std::vector<glm::vec3> new_points;
-	if (level == 9)
-	{
-		int hjhjgkjgcjlh = 1;
-	}
 	if (curr_node->left != nullptr && points.size() >= MINIMUM_VERTCIES_FOR_BVH)
 	{
 		for (int i = 0; i < points.size(); i++)

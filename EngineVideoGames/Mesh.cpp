@@ -386,10 +386,10 @@ bool BoundingBox::CheckCollision(BoundingBox* other)
 
 void BoundingBox::UpdateDynamicVectors(glm::mat4 translate, glm::mat4 rotate)
 {
-	center = glm::vec3(translate * glm::vec4(fixed_center, 1));
-	xInit = glm::vec3(rotate * glm::vec4(fixed_xInit, 0));
-	yInit = glm::vec3(rotate * glm::vec4(fixed_yInit, 0));
-	zInit = glm::vec3(rotate * glm::vec4(fixed_zInit, 0));
+	center = glm::vec3(translate * rotate * glm::vec4(fixed_center, 1));
+	xInit = glm::vec3(rotate * glm::vec4(fixed_xInit, 1));
+	yInit = glm::vec3(rotate * glm::vec4(fixed_yInit, 1));
+	zInit = glm::vec3(rotate * glm::vec4(fixed_zInit, 1));
 }
 
 bool BoundingBox::IsSmallestBox()
