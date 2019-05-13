@@ -5,7 +5,7 @@
 #define GREEN glm::vec3(0, 1, 0)
 #define RED glm::vec3(1, 0, 0)
 
-#define NUM_OF_POINTS 1500
+#define NUM_OF_POINTS 70
 
 void IndexedModel::CalcNormals()
 {

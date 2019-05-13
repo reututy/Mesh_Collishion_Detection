@@ -7,7 +7,7 @@
 #include "bezier2D.h"
 #include "obj_loader.h"
 
-#define MINIMUM_VERTCIES_FOR_BVH 700
+#define MINIMUM_VERTCIES_FOR_BVH 50
 
 static void printMat(const glm::mat4 mat)
 {
@@ -187,19 +187,7 @@ BVH* MeshConstructor::CreateBVH(std::vector<glm::vec3> points, Node* curr_node, 
 	bvh->GetBox()->SetNumOfPoints(points.size());
 
 	std::vector<glm::vec3> new_points;
-	if (level == 1)
-	{
-		int hjhjgkjgcjlh = 1;
-	}
-	if (level == 2)
-	{
-		int hjhjgkjgcjlh = 1;
-	}
-	if (level == 3)
-	{
-		int hjhjgkjgcjlh=1;
-	}
-	if (level == 4)
+	if (level == 9)
 	{
 		int hjhjgkjgcjlh = 1;
 	}
@@ -207,7 +195,7 @@ BVH* MeshConstructor::CreateBVH(std::vector<glm::vec3> points, Node* curr_node, 
 	{
 		for (int i = 0; i < points.size(); i++)
 		{
-			if (curr_node->data[curr_cut] < points[i][curr_cut])
+			if (points[i][curr_cut] <= curr_node->data[curr_cut])
 			{
 				new_points.push_back(points[i]);
 			}
@@ -219,7 +207,7 @@ BVH* MeshConstructor::CreateBVH(std::vector<glm::vec3> points, Node* curr_node, 
 	{
 		for (int i = 0; i < points.size(); i++)
 		{
-			if (curr_node->data[curr_cut] >= points[i][curr_cut])
+			if (points[i][curr_cut] > curr_node->data[curr_cut])
 			{
 				new_points.push_back(points[i]);
 			}
