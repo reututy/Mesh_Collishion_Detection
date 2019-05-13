@@ -23,6 +23,7 @@ static void printMat(const glm::mat4 mat)
 
 MeshConstructor::MeshConstructor(const int type)
 {
+	this->type = type;
 	switch (type)
 	{
 	case Axis:	
@@ -44,6 +45,7 @@ MeshConstructor::MeshConstructor(const int type)
 
 MeshConstructor::MeshConstructor(const std::string& fileName)
 {
+	this->type = -1;
 	InitMesh(OBJModel(fileName).ToIndexedModel());
 }
 
@@ -51,11 +53,13 @@ MeshConstructor::MeshConstructor(Bezier1D *curve,bool isSurface,unsigned int res
 {
 	if (isSurface)
 	{
+		this->type = BezierSurface;
 		Bezier2D surface(*curve, curve->GetAxis(), 4);
 		InitMesh(surface.GetSurface(resT, resS));
 	}
 	else
 	{
+		this->type = BezierLine;
 		InitLine(curve->GetLine(resT));
 	}
 }
@@ -101,8 +105,9 @@ void MeshConstructor::InitLine(IndexedModel &model){
 
 void MeshConstructor::InitMesh(IndexedModel &model)
 {
-	CreateTree(model.positions);
-	positions = model.positions;
+	if (type == -1)
+		CreateTree(model.positions);
+	//positions = model.positions;
 
 	int verticesNum = model.positions.size();
 	indicesNum = model.indices.size();
@@ -121,44 +126,33 @@ void MeshConstructor::InitMesh(IndexedModel &model)
 	
 	vao.Unbind();
 	is2D = true;
-	
 }
 
-void MeshConstructor::CopyLine(const MeshConstructor &mesh){
-	
+void MeshConstructor::CopyLine(const MeshConstructor &mesh)
+{
 	vao.Bind();
-
 	for (int i = 0; i < 2; i++)
 	{
 		vbs.push_back(new VertexBuffer(*(mesh.vbs[i])));	
 		vao.AddBuffer(*vbs.back(),i,3,GL_FLOAT);
 	}
-	
 	ib = new IndexBuffer(*mesh.ib);
-	
 	vao.Unbind();
-
 	is2D = false;
-	
 }
 
-void MeshConstructor::CopyMesh(const MeshConstructor &mesh){
-
+void MeshConstructor::CopyMesh(const MeshConstructor &mesh)
+{
 	vao.Bind();
-
 	for (int i = 0; i < 4; i++)
 	{
 		vbs.push_back(new VertexBuffer(*(mesh.vbs[i])));	
 		vao.AddBuffer(*vbs.back(),i,3,GL_FLOAT);
 	}
-	
-	
 	ib = new IndexBuffer(*mesh.ib);
 	//ib = mesh.ib;
 	vao.Unbind();
-
 	is2D = true;
-	
 }
 
 void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
@@ -193,7 +187,15 @@ BVH* MeshConstructor::CreateBVH(std::vector<glm::vec3> points, Node* curr_node, 
 	bvh->GetBox()->SetNumOfPoints(points.size());
 
 	std::vector<glm::vec3> new_points;
-	if (level == 5)
+	if (level == 1)
+	{
+		int hjhjgkjgcjlh = 1;
+	}
+	if (level == 2)
+	{
+		int hjhjgkjgcjlh = 1;
+	}
+	if (level == 3)
 	{
 		int hjhjgkjgcjlh=1;
 	}
@@ -227,149 +229,25 @@ BVH* MeshConstructor::CreateBVH(std::vector<glm::vec3> points, Node* curr_node, 
 	return bvh;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-/*
-BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left, int num_of_points, 
-								std::list<glm::vec4> &left, std::list<glm::vec4> &right)
-{
-	BVH* bvh = new BVH();
-	glm::vec3 center = parent->GetFixedCenter();
-	glm::vec3 size = glm::vec3(0);
-	int curr_cut = level % 3;
-	int sign = is_left ? -1 : 1;
-
-
-	glm::vec3 sum = glm::vec3(0);
-	glm::vec3 max = glm::vec3(0);
-	*/
-
-	/* A try: Half of the size - does not work*/
-	/*
-	std::list<glm::vec4> *points_to_check = is_left ? &left : &right;
-
-	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
-	{
-		sum.x += (*it).x;
-		sum.y += (*it).y;
-		sum.z += (*it).z;
-	}
-	center = (1.0f / points_to_check->size()) * sum;
-	size[curr_cut] = parent->GetSize()[curr_cut] / 2.0f;
-	*/
-
-	/* Works partly: */
-	/*
-	glm::vec3 min_point_x = parent->GetSize();
-	glm::vec3 max_point_x = glm::vec3(0);
-	glm::vec3 min_point_y = parent->GetSize();
-	glm::vec3 max_point_y = glm::vec3(0);
-	glm::vec3 min_point_z = parent->GetSize();
-	glm::vec3 max_point_z = glm::vec3(0);
-	std::list<glm::vec4> *points_to_check = is_left ? &left : &right;
-
-	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
-	{
-		sum.x += (*it).x;
-		sum.y += (*it).y;
-		sum.z += (*it).z;
-		//look for max points
-		if ((*it).x > max_point_x.x)
-			max_point_x.x = (*it).x;
-		if ((*it).y > max_point_y.y)
-			max_point_y.y = (*it).y;
-		if ((*it).z > max_point_z.z)
-			max_point_z.z = (*it).z;
-		//look for min points
-		if ((*it).x < min_point_x.x)
-			min_point_x.x = (*it).x;
-		if ((*it).y < min_point_y.y)
-			min_point_y.y = (*it).y;
-		if ((*it).z < min_point_z.z)
-			min_point_z.z = (*it).z;
-	}
-
-	center = (1.0f / points_to_check->size()) * sum;
-	size.x = glm::abs(max_point_x.x - min_point_x.x) / 2.0f;
-	size.y = glm::abs(max_point_x.y - min_point_x.y) / 2.0f;
-	size.z = glm::abs(max_point_x.z - min_point_x.z) / 2.0f;
-	*/
-
-	/* Almog - what should be:*/
-	/*
-	glm::vec3 sum = glm::vec3(0);
-	glm::vec3 max = glm::vec3(0);
-
-	std::list<glm::vec4> *points_to_check = is_left ? &left : &right;
-	
-	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
-	{
-		sum.x += (*it).x;
-		sum.y += (*it).y;
-		sum.z += (*it).z;
-	}
-	center = (1.0f / points_to_check->size()) * sum;
-
-	for (std::list<glm::vec4>::iterator it = points_to_check->begin(); it != points_to_check->end(); it++)
-	{
-		size = glm::max(size, glm::abs(glm::vec3(*it) - center));
-	}
-
-	bvh->SetBoundingBox(begin, center, size);
-	bvh->GetBox()->SetNumOfPoints(num_of_points);
-
-	
-	std::list<glm::vec4> left_list;
-	std::list<glm::vec4> right_list;
-
-	kdtree.findMedian(curr_cut, left, left_list, right_list);
-	kdtree.findMedian(curr_cut, right, left_list, right_list);
-
-	if (curr_node->left != nullptr && num_of_points >= MINIMUM_VERTCIES_FOR_BVH)
-		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true, num_of_points / 2, left_list, right_list));
-	if (curr_node->right != nullptr && num_of_points >= MINIMUM_VERTCIES_FOR_BVH)
-		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2, left_list, right_list));
-	return bvh;
-}*/
-
-
-
-
-
-
 BVH* MeshConstructor::GetBVH()
 {
 	return &bvh;
 }
 
+int MeshConstructor::GeyType()
+{
+	return type;
+}
+
+/* The 'Working' CheckCollision - Mine */
 // Checks collision between two bvh using BB CheckCollision
 BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
-																		 glm::mat4 other_trans, glm::mat4 other_rot)
+	glm::mat4 other_trans, glm::mat4 other_rot)
 {
 	//First Checks if the big boxes collides:
 	std::vector<std::pair<BVH*, BVH*>> queue;
 	BVH* this_curr = &this->bvh;
 	BVH* other_curr = other->GetBVH();
-
-	/*
-	this_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
-	other_curr->GetBox()->UpdateDynamicVectors(other_trans, other_rot);
-	
-	if (this_curr->GetBox()->CheckCollision(other_curr->GetBox()))
-	{
-		std::cout << "They collide! "<< std::endl;
-		return this_curr->GetBox();
-	}
-	*/
 
 	queue.emplace_back(this_curr, other_curr);
 	while (!queue.empty())
@@ -377,7 +255,7 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 		this_curr = queue.back().first;
 		other_curr = queue.back().second;
 		queue.pop_back();
-		
+
 		if (this_curr != nullptr && other_curr != nullptr)
 		{
 			this_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
@@ -414,6 +292,45 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 	}
 	return nullptr;
 }
+
+/* Almog's code */
+// Checks collision between two bvh using BB CheckCollision
+/*
+BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
+																		glm::mat4 other_trans, glm::mat4 other_rot)
+{
+	std::queue<BVH*> self_queue;
+	BVH* self_curr = &this->bvh;
+	self_queue.push(self_curr);
+	int counter = 0;
+	while (!self_queue.empty()) {
+		counter++;
+		self_curr = self_queue.front();
+		self_queue.pop();
+		other->GetBVH()->GetBox()->UpdateDynamicVectors(other_rot, other_trans);
+		self_curr->GetBox()->UpdateDynamicVectors(this_rot, this_trans);
+		if (self_curr->GetBox()->CheckCollision(other->GetBVH()->GetBox()))
+		{
+			//if(counter>=100)
+			//	return self_curr->box->pickShape;
+			if (self_curr->GetLeft() != nullptr && self_curr->GetRight() != nullptr) {
+				self_queue.push(self_curr->GetLeft());
+				self_queue.push(self_curr->GetRight());
+			}
+			else if (self_curr->GetLeft() != nullptr)
+				self_queue.push(self_curr->GetLeft());
+			else if (self_curr->GetRight() != nullptr)
+				self_queue.push(self_curr->GetRight());
+			else
+			{
+				//std::cout << self_curr->level << std::endl;
+				return self_curr->GetBox();
+			}
+		}
+	}
+	return nullptr;
+}
+*/
 
 /* The 'working code': */
 /*

@@ -17,8 +17,8 @@ private:
 	//TO DO: add bounding box data base and build it in the constructor:
 	Kdtree kdtree;
 	BVH bvh;
-	std::vector<glm::vec3> positions;
-
+	//std::vector<glm::vec3> positions;
+	int type;
 	
 	std::vector<VertexBuffer*> vbs;
 	bool is2D;
@@ -60,4 +60,5 @@ public:
 		glm::mat4 other_trans, glm::mat4 other_rot);
 
 	BVH* GetBVH();
+	int GeyType();
 };

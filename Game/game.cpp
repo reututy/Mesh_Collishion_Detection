@@ -113,7 +113,7 @@ void Game::CreateBoundingBoxes(BVH* bvh, int parent, int level)
 		//shapes[pickedShape]->Unhide();
 
 	//TODO: Need to fix level 4,5 ?
-	if (level == 5)
+	if (level == 4)
 		shapes[pickedShape]->Unhide();
 	if (bvh->GetLeft() != nullptr)
 		CreateBoundingBoxes(bvh->GetLeft(), parent, level + 1);
@@ -130,6 +130,7 @@ void Game::SetNumOfShape()
 
 void Game::Init()
 {	
+	/* The code with the 2 Bezier:*/
 	/*
 	//Add Axis
 	addShape(Axis, -1, LINES);
@@ -176,18 +177,15 @@ void Game::Init()
 	*/
 
 	
-	/* The code with the 2 toruses:*/
+	/* The code with the 2 balls:*/
 	
 	addShape(Axis, -1, LINES); //0 Axis
 	SetNumOfShape();
 	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
 	SetNumOfShape();
 	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//2 left ball
-	//addShape(Octahedron, -1, TRIANGLES); //2 left Octahedron
 	SetNumOfShape();
 	//addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//3 right ball
-	//addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
-	//addShapeCopy(2, -1, TRIANGLES);
 	//SetNumOfShape();
 
 	//translate all scene away from camera
@@ -199,16 +197,10 @@ void Game::Init()
 	shapeTransformation(xScale, 100);
 	shapeTransformation(zScale, 100);
 
-	//ReadPixel();
+	//Scale and move the first (left) Octahedron:
+	//pickedShape = 2;
 
-	//Scale and move the first (left) Octahedron
-	pickedShape = 2;
-	//shapeTransformation(xGlobalTranslate, -10);
-	//shapeTransformation(yScale, BB_SCALE);
-	//shapeTransformation(xScale, BB_SCALE);
-	//shapeTransformation(zScale, BB_SCALE);
-
-	//Scale and move the second (right) Octahedron
+	//Scale and move the second (right) Octahedron:
 	//pickedShape = 3;
 	//shapeTransformation(zLocalRotate, 30);
 	//shapeTransformation(yGlobalTranslate, 50);
@@ -222,6 +214,8 @@ void Game::Init()
 			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
 		}
 	}
+
+	//ReadPixel();
 
 	pickedShape = -1;
 	//Activate();
@@ -339,7 +333,7 @@ void Game::Update(const glm::mat4 &MVP, const glm::mat4 &Normal, Shader *s)
 	s->SetUniformMat4f("Normal", Normal);
 	s->SetUniform4f("lightDirection", 0.0f, 0.0f, -1.0f, 1.0f);
 	s->SetUniform4f("lightColor", r / 255.0f, g / 255.0f, b / 255.0f, 1.0f);
-	//cannot_move = CheckCollisionDetection();
+	cannot_move = CheckCollisionDetection();
 }
 
 void Game::WhenRotate()
