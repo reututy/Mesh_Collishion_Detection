@@ -107,7 +107,6 @@ void MeshConstructor::InitMesh(IndexedModel &model)
 {
 	if (type == -1)
 		CreateTree(model.positions);
-	//positions = model.positions;
 
 	int verticesNum = model.positions.size();
 	indicesNum = model.indices.size();
@@ -223,9 +222,7 @@ int MeshConstructor::GeyType()
 	return type;
 }
 
-/* The 'Working' CheckCollision - Mine */
 // Checks collision between two bvh using BB CheckCollision
-
 BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
 																		 glm::mat4 other_trans, glm::mat4 other_rot)
 {
@@ -277,105 +274,3 @@ BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::ma
 	}
 	return nullptr;
 }
-
-
-/* Almog's code */
-// Checks collision between two bvh using BB CheckCollision
-/*
-BoundingBox* MeshConstructor::CollisionDetection(MeshConstructor* other, glm::mat4 this_trans, glm::mat4 this_rot,
-																		glm::mat4 other_trans, glm::mat4 other_rot)
-{
-	std::queue<BVH*> self_queue;
-	BVH* self_curr = &this->bvh;
-	self_queue.push(self_curr);
-	int counter = 0;
-	while (!self_queue.empty()) {
-		counter++;
-		self_curr = self_queue.front();
-		self_queue.pop();
-		other->GetBVH()->GetBox()->UpdateDynamicVectors(other_trans, other_rot);
-		self_curr->GetBox()->UpdateDynamicVectors(this_trans, this_rot);
-		if (self_curr->GetBox()->CheckCollision(other->GetBVH()->GetBox()))
-		{
-			//if(counter>=100)
-			//	return self_curr->box->pickShape;
-			if (self_curr->GetLeft() != nullptr && self_curr->GetRight() != nullptr) {
-				self_queue.push(self_curr->GetLeft());
-				self_queue.push(self_curr->GetRight());
-			}
-			else if (self_curr->GetLeft() != nullptr)
-				self_queue.push(self_curr->GetLeft());
-			else if (self_curr->GetRight() != nullptr)
-				self_queue.push(self_curr->GetRight());
-			else
-			{
-				//std::cout << self_curr->level << std::endl;
-				return self_curr->GetBox();
-			}
-		}
-	}
-	return nullptr;
-}
-*/
-
-/* The 'working code': */
-/*
-void MeshConstructor::CreateTree(std::vector<glm::vec3> positions)
-{
-	std::list<glm::vec4> points;
-	for (int i = 0; i < positions.size(); i++)
-		points.push_back(glm::vec4(positions.at(i), 1));
-	kdtree.makeTree(points);
-	kdtree.printTree(kdtree.getRoot());
-
-	glm::vec3 sum = glm::vec3(0);
-	glm::vec3 max = glm::vec3(0);
-	for (std::list<glm::vec4>::iterator it = points.begin(); it != points.end(); it++)
-	{
-		sum.x += (*it).x;
-		sum.y += (*it).y;
-		sum.z += (*it).z;
-		if ((*it).x > max.x)
-			max.x = (*it).x;
-		if ((*it).y > max.y)
-			max.y = (*it).y;
-		if ((*it).z > max.z)
-			max.z = (*it).z;
-	}
-	glm::vec3 avg = (1.0f / positions.size()) * sum;
-	glm::vec3 size = glm::abs(max - avg);
-
-	bvh.SetBoundingBox(avg, size);
-	bvh.GetBox()->SetNumOfPoints(positions.size());
-
-	bvh.SetLeft(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, true, positions.size()));
-	bvh.SetRight(CreateBVH(bvh.GetBox(), kdtree.getRoot(), 0, false, positions.size()));
-}
-
-BVH* MeshConstructor::CreateBVH(BoundingBox* parent, Node* curr_node, int level, bool is_left, int num_of_points)
-{
-	BVH* bvh = new BVH();
-	glm::vec3 center = parent->GetFixedCenter();
-	glm::vec3 size = parent->GetSize();
-	int curr_cut = level % 3;
-	int sign = is_left ? -1 : 1;
-
-	//TODO: Need to fix level 4,5 and scale size ?
-
-	center[curr_cut] = ((parent->GetFixedCenter()[curr_cut] + sign * parent->GetSize()[curr_cut]) + curr_node->data[curr_cut]) / 2.0f;
-	//size[curr_cut] = glm::abs(parent->GetSize()[curr_cut] / 2.0f);
-	if (!is_left)
-		size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] + parent->GetSize()[curr_cut]) - center[curr_cut]);
-	else
-		size[curr_cut] = glm::abs((parent->GetFixedCenter()[curr_cut] - center[curr_cut]) - (parent->GetFixedCenter()[curr_cut] - curr_node->data[curr_cut]));
-
-	bvh->SetBoundingBox(center, size);
-	bvh->GetBox()->SetNumOfPoints(num_of_points);
-
-	if (curr_node->left != nullptr)
-		bvh->SetLeft(CreateBVH(bvh->GetBox(), curr_node->left, level + 1, true, num_of_points / 2));
-	if (curr_node->right != nullptr)
-		bvh->SetRight(CreateBVH(bvh->GetBox(), curr_node->right, level + 1, false, num_of_points / 2));
-	return bvh;
-}
-*/

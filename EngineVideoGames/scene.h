@@ -5,7 +5,6 @@
 #include "VertexArray.hpp"
 #include <vector>
 
-
 class Scene : public MovableGLM
 {
 

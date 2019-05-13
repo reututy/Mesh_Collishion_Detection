@@ -28,4 +28,3 @@ public:
 	BVH* GetRight();
 	int GetLevel();
 };
-

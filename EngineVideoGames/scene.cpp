@@ -4,10 +4,8 @@
 #include <iostream>
 #include <glm/gtc/quaternion.hpp>
 
-
 using namespace std;
 using namespace glm;
-
 
 static void printMat(const mat4 mat)
 {
@@ -19,6 +17,7 @@ static void printMat(const mat4 mat)
 		printf("\n");
 	}
 }
+
 Scene::Scene()
 {
 	//verticesSize = sizeof(vertices)/sizeof(vertices[0]);

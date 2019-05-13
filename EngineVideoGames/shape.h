@@ -3,7 +3,6 @@
 #include "VertexArray.hpp"
 #include "shader.h"
 #include "MeshConstructor.h"
-
 #include "texture.h"
 
 class Shape : public MovableGLM

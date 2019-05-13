@@ -91,7 +91,6 @@ private:
 	glm::vec3 fixed_xInit;      // x axis of the box. default value (1,0,0)		  
 	glm::vec3 fixed_yInit;      // y axis of the box. default value (0,1,0)		 
 	glm::vec3 fixed_zInit;	  // z axis of the box. default value (0,0,1)
-	//TODO: Add constructor and checkCollision function:
 
 public:
 	BoundingBox();

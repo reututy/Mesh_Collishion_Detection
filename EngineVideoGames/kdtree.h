@@ -37,7 +37,6 @@ class Node
 	 
 	 //default deconstructor
 	 ~Node();
-	 
 };
 
 class Kdtree
@@ -82,6 +81,5 @@ private:
 	int GetDepth();
 
 };
-
 
 #endif

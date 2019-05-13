@@ -10,14 +10,12 @@ BVH::BVH()
 
 BVH::~BVH()
 {
-	/*
+	if (left != NULL)
+		delete left;
+	if (right != NULL)
+		delete right;
 	if (box != NULL)
 		delete box;
-	if (left != NULL)
-		delete box;
-	if (right != NULL)
-		delete box;
-	*/
 }
 
 bool BVH::IsLeaf()
