@@ -2,7 +2,6 @@
 #include <iostream>
 
 #define CONTROL_POINT_SCALE 0.1
-#define PURGATORY -5000000
 #define BB_SCALE 4.f
 
 bool once = false;
@@ -175,9 +174,50 @@ void Game::Init()
 	pickedShape = -1;
 	*/
 
+	/* An example with a ball and a torus:*/
+
+	addShape(Axis, -1, LINES); //0 Axis
+	SetNumOfShape();
+	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
+	SetNumOfShape();
+	addShapeFromFile("../res/objs/ball.obj", -1, TRIANGLES);	//2 down ball
+	SetNumOfShape();
+	addShapeFromFile("../res/objs/torus.obj", -1, TRIANGLES);	//3 up torus
+	SetNumOfShape();
+
+	//translate all scene away from camera
+	myTranslate(glm::vec3(0, 0, -100), 0);
+
+	//Scale the Axis:
+	pickedShape = 0;
+	shapeTransformation(yScale, 100);
+	shapeTransformation(xScale, 100);
+	shapeTransformation(zScale, 100);
+
+	//ReadPixel();
+
+	//Scale and move the first (down) ball:
+	pickedShape = 2;
+	shapeTransformation(zLocalRotate, 45);
+
+	//Scale and move the second (up) torus:
+	pickedShape = 3;
+	shapeTransformation(yGlobalTranslate, 100);
+
+	shapes[1]->Hide();
+
+	for (int i = 0; i < shapes.size(); i++)
+	{
+		if (shapes[i]->GetMode() == TRIANGLES)
+		{
+			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
+		}
+	}
+	pickedShape = -1;
+	Activate();
 	
-	/* The code with the 2 balls:*/
-	
+	/* An example with the 2 balls:*/
+	/*
 	addShape(Axis, -1, LINES); //0 Axis
 	SetNumOfShape();
 	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
@@ -198,11 +238,11 @@ void Game::Init()
 
 	//ReadPixel();
 
-	//Scale and move the first (down) Octahedron:
+	//Scale and move the first (down) ball:
 	pickedShape = 2;
 	shapeTransformation(zLocalRotate, 45);
 
-	//Scale and move the second (up) Octahedron:
+	//Scale and move the second (up) ball:
 	pickedShape = 3;
 	shapeTransformation(yGlobalTranslate, 50);
 	
@@ -217,55 +257,8 @@ void Game::Init()
 	}
 	pickedShape = -1;
 	Activate();
-
-	/* The code with the 2 Octahedrons:*/
-	/*
-	addShape(Axis,-1,LINES); //0 Axis
-	SetNumOfShape();
-	addShape(Cube, 1, LINE_LOOP); //1 Cube to copy
-	SetNumOfShape();
-	addShape(Octahedron,-1,TRIANGLES); //2 left Octahedron
-	SetNumOfShape();
-	addShape(Octahedron, -1, TRIANGLES); //3 right Octahedron
-	SetNumOfShape();
-
-	//translate all scene away from camera
-	myTranslate(glm::vec3(0,0,-20),0);
-
-	//Scale the Axis:
-	pickedShape = 0;
-	shapeTransformation(yScale, 10);
-	shapeTransformation(xScale, 10);
-	shapeTransformation(zScale, 10);
-
-	//ReadPixel();
-
-	//Scale and move the first (left) Octahedron
-	pickedShape = 2;
-	//shapeTransformation(xGlobalTranslate, -10);
-	//shapeTransformation(yScale, BB_SCALE);
-	//shapeTransformation(xScale, BB_SCALE);
-	//shapeTransformation(zScale, BB_SCALE);
-
-	//Scale and move the second (right) Octahedron
-	pickedShape = 3;
-	shapeTransformation(zLocalRotate, 30);
-	shapeTransformation(xGlobalTranslate, 5);
-
-	shapes[1]->Hide();
-
-	for (int i = 0; i < shapes.size(); i++)
-	{
-		if (shapes[i]->GetMode() == TRIANGLES)
-		{
-			CreateBoundingBoxes(shapes[i]->GetMesh()->GetBVH(), i, 0);
-		}
-	}
-	
-	pickedShape = -1;
-	//Activate();
 	*/
-	
+
 }
 
 int Game::CreateCurveControlPoints(int counter, Bezier1D *curve)
